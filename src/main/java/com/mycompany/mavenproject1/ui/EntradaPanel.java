@@ -22,7 +22,7 @@ import javax.swing.JOptionPane;
 public class EntradaPanel extends javax.swing.JPanel {
 
     //var pathInsumos;
-    private Map<String, String> paths;
+    public static Map<String, String> paths;
     private Cliente cliente;
     //var pathListadoFacturas;
 

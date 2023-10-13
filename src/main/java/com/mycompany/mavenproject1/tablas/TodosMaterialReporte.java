@@ -4,7 +4,11 @@
  */
 package com.mycompany.mavenproject1.tablas;
 
+import com.mycompany.mavenproject1.Constantes;
+import com.mycompany.mavenproject1.FCGenerador;
+import com.mycompany.mavenproject1.FileUtils;
 import com.mycompany.mavenproject1.HibernateUtil;
+import com.mycompany.mavenproject1.StringUtils;
 import com.mycompany.mavenproject1.database.model.MaterialReporte;
 import com.mycompany.mavenproject1.database.repository.MaterialReporteDAO;
 import com.mycompany.mavenproject1.tablas.model.MPReporteTableModel;
@@ -15,6 +19,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import static java.awt.image.ImageObserver.WIDTH;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
@@ -27,14 +44,19 @@ import javax.swing.JOptionPane;
 public class TodosMaterialReporte extends javax.swing.JPanel {
 
     /**
-     * Creates new form TodosMaterialReporte
+     * Creates neigw form TodosMaterialReporte
      */
-    public TodosMaterialReporte() {
+    List<String> codigos;
+    private Map<String, String> paths;
+
+    public TodosMaterialReporte(Map<String, String> path) {
         initComponents();
+        this.paths=path;
         this.jTable1.setRowHeight(30);
         this.setBounds(0, 0, 800, 600);
         this.setBackground(Color.LIGHT_GRAY);
         cargarDatos();
+        
         JMenuItem menuIActualizar = new JMenuItem("Actualizar");
 
         jPopupMenu1.add(menuIActualizar);
@@ -42,6 +64,8 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
             cargarDatos();
         });
     }
+
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
