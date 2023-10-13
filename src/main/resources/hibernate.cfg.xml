@@ -1,0 +1,30 @@
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+
+    <!-- Configuración de la conexión a la base de datos -->
+    <session-factory>
+        
+        <!-- Propiedades de la conexión -->
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/miBase</property>
+        <property name="hibernate.connection.username">postgres</property>
+        <property name="hibernate.connection.password">12345</property>
+        
+        <!-- Otros ajustes de Hibernate -->
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.current_session_context_class">thread</property>
+
+        <!-- Si estás usando anotaciones -->
+        <property name="hibernate.archive.autodetection">class, hbm</property>
+
+        <!-- Si tienes mapeos XML, añade esta línea -->
+        <mapping class="com.mycompany.mavenproject1.database.model.Cliente"/>
+        <mapping class="com.mycompany.mavenproject1.database.model.Material"/>
+        <mapping class="com.mycompany.mavenproject1.database.model.MaterialReporte"/>
+        <!-- <mapping resource="ruta/de/tu/archivo.hbm.xml" /> -->
+        
+    </session-factory>
+
+</hibernate-configuration>
