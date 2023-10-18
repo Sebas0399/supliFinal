@@ -8,6 +8,7 @@ import com.mycompany.mavenproject1.FileUtils;
 import com.mycompany.mavenproject1.InsumosUtils;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.repository.ClienteDAO;
+import com.mycompany.mavenproject1.tablas.TodosMaterialReporte;
 import java.awt.Color;
 
 import java.util.HashMap;
@@ -35,7 +36,7 @@ public class EntradaPanel extends javax.swing.JPanel {
         this.setBounds(0, 0, 800, 600);
         this.setBackground(Color.LIGHT_GRAY);
         paths = new HashMap<>();
-        cliente=(Cliente) this.comboCliente.getSelectedItem();
+        cliente = (Cliente) this.comboCliente.getSelectedItem();
     }
 
     private void cargarClientes() {
@@ -173,6 +174,7 @@ public class EntradaPanel extends javax.swing.JPanel {
         if (path != null) {
             JOptionPane.showMessageDialog(null, "Reporte de produccion cargado correctamente");
             getPaths().put("RP", path);
+            TodosMaterialReporte.regargarPanel();
 
         } else {
             JOptionPane.showMessageDialog(null, "Ocurrio un error");
@@ -204,7 +206,7 @@ public class EntradaPanel extends javax.swing.JPanel {
         } else {
             JDialog dialog = new JDialog();
             dialog.setTitle("Generar");
-            dialog.getContentPane().add(new FormInformeFinal(this.paths.get("RP"),cliente));
+            dialog.getContentPane().add(new FormInformeFinal(this.paths.get("RP"), cliente));
             dialog.setSize(400, 150);
             dialog.setVisible(true);
         }
@@ -218,7 +220,7 @@ public class EntradaPanel extends javax.swing.JPanel {
 
     private void comboClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboClienteActionPerformed
         // TODO add your handling code here:
-        cliente=(Cliente) comboCliente.getSelectedItem();
+        cliente = (Cliente) comboCliente.getSelectedItem();
     }//GEN-LAST:event_comboClienteActionPerformed
 
 

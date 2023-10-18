@@ -51,21 +51,20 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
 
     public TodosMaterialReporte(Map<String, String> path) {
         initComponents();
-        this.paths=path;
+        this.paths = path;
         this.jTable1.setRowHeight(30);
         this.setBounds(0, 0, 800, 600);
         this.setBackground(Color.LIGHT_GRAY);
         cargarDatos();
-        
+
         JMenuItem menuIActualizar = new JMenuItem("Actualizar");
 
         jPopupMenu1.add(menuIActualizar);
         menuIActualizar.addActionListener((ActionEvent e) -> {
             cargarDatos();
         });
+        this.jPanel1.add(new FormMaterialReporte());
     }
-
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -80,6 +79,7 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         btnNuevo = new javax.swing.JToggleButton();
+        jPanel1 = new javax.swing.JPanel();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -124,6 +124,7 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
             }
         });
         add(btnNuevo, java.awt.BorderLayout.PAGE_END);
+        add(jPanel1, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
@@ -155,7 +156,12 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
 
 
     }//GEN-LAST:event_btnNuevoActionPerformed
-
+    public static void regargarPanel() {
+        jPanel1.removeAll();
+                
+                
+        jPanel1.add(new FormMaterialReporte());
+    }
     private void jTable1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTable1KeyPressed
         // TODO add your handling code here:
 
@@ -216,7 +222,7 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jScrollPane1MouseReleased
 
-    public void cargarDatos() {
+    public static void cargarDatos() {
         MaterialReporteDAO mr = new MaterialReporteDAO(HibernateUtil.getSessionFactory());
 
         JButton mod = new JButton();
@@ -241,13 +247,14 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
             };
         }
         MPReporteTableModel modelo = new MPReporteTableModel(datos);
-        this.jTable1.setModel(modelo);
-        this.jTable1.setDefaultRenderer(Object.class, new RenderTable());
+        jTable1.setModel(modelo);
+        jTable1.setDefaultRenderer(Object.class, new RenderTable());
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btnNuevo;
+    protected static javax.swing.JPanel jPanel1;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    protected static javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }
