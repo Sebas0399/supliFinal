@@ -84,7 +84,8 @@ public class FormMaterialReporte extends javax.swing.JPanel {
         this.codigos = generarFacturaExcel(cargarFacturas());
         this.btnGuardar.setText("Actualizar");
         materialReporte = mr.readByCodigo(codigo);
-        this.comboMaterial.setSelectedItem(materialReporte.getCodigo());
+        System.out.println(materialReporte);
+        this.comboMaterial.setSelectedItem(codigo);
         var itemSelected = this.insumos.stream().filter(x -> x.getDescripcion().equals(materialReporte.getDescripcion()));
         this.comboInsumos.setSelectedItem(itemSelected.findAny().get());
         this.codigos.stream().forEach(x -> this.comboMaterial.addItem(x));

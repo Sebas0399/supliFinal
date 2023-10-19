@@ -189,7 +189,7 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
             dialog.setTitle("Actualizar");
 
             dialog.getContentPane().add(fr);
-            dialog.setSize(500, 400);
+            dialog.setSize(900, 130);
             dialog.setVisible(true);
             dialog.addWindowListener(new WindowAdapter() {
                 @Override

@@ -63,7 +63,7 @@ public class FormInformeFinal extends javax.swing.JPanel {
                 Runnable mRunnable = () -> {
                     Cargando c = new Cargando("Generando");
                     c.setVisible(true);
-                    InformeFinalUtils ifu = new InformeFinalUtils(path, FileUtils.saveData(),cliente);
+                    InformeFinalUtils ifu = new InformeFinalUtils(path, FileUtils.saveDataOne(),cliente);
 
                     ifu.generarInforme(inicio, quitarHora(fin));
                     c.dispose();

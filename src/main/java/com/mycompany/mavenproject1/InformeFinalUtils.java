@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import static org.apache.poi.ss.usermodel.CellType.BOOLEAN;
 import static org.apache.poi.ss.usermodel.CellType.FORMULA;
@@ -49,6 +50,7 @@ public class InformeFinalUtils {
     public InformeFinalUtils(String reporteVentas, String ruta,Cliente cliente) {
         this.reporteVentas = reporteVentas;
         this.ruta = ruta;
+        this.cliente=cliente;
     }
 
     public List<Map<Integer, List<String>>> convertir(String path) {
@@ -172,7 +174,7 @@ public class InformeFinalUtils {
         MaterialDAO materialDAO = new MaterialDAO();
         MaterialReporteDAO materialReporteDAO = new MaterialReporteDAO(HibernateUtil.getSessionFactory());
 
-        Workbook workbook = new XSSFWorkbook();
+        Workbook workbook = new HSSFWorkbook();
         Sheet sheet = workbook.createSheet();
         List<List<String>> lFinal = new ArrayList<>();
         List<List<String>> cabeceras = List.of(
@@ -209,7 +211,8 @@ public class InformeFinalUtils {
             }
         }
 
-        String fileLocation = this.ruta + "\\" + "Final" + ".xls";
+        String fileLocation = this.ruta  + ".xls";
+        System.out.println(fileLocation);
         try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
             workbook.write(outputStream);
             JOptionPane.showMessageDialog(null, "Informe Final Generado");

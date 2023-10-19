@@ -59,4 +59,18 @@ public class FileUtils {
         }
 
     }
+    public static String saveDataOne() {
+        var j = new JFileChooser(FileSystemView.getFileSystemView());
+        //j.setFileFilter(new FileNameExtensionFilter("Excel","xlsx"));
+        j.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        int r = j.showSaveDialog(null);
+
+        if (r == JFileChooser.APPROVE_OPTION) {
+            return j.getSelectedFile().getAbsolutePath();
+
+        } else {
+            return null;
+        }
+
+    }
 }
