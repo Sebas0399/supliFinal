@@ -158,8 +158,7 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
     }//GEN-LAST:event_btnNuevoActionPerformed
     public static void regargarPanel() {
         jPanel1.removeAll();
-                
-                
+
         jPanel1.add(new FormMaterialReporte());
     }
     private void jTable1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTable1KeyPressed
@@ -185,7 +184,12 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
             //mr.delete();
         } else if (col == 4) {
             FormMaterialReporte fr = new FormMaterialReporte(this.jTable1.getModel().getValueAt(row, 0).toString());
-            JDialog dialog = new JDialog();
+            jPanel1.removeAll();
+
+            jPanel1.add(fr);
+            //this.jPanel1.add(fr);
+
+            /* JDialog dialog = new JDialog();
             dialog.setTitle("Actualizar");
 
             dialog.getContentPane().add(fr);
@@ -202,8 +206,7 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
                     cargarDatos();
                 }
 
-            });
-
+            });*/
         }
 
     }//GEN-LAST:event_jTable1MouseClicked

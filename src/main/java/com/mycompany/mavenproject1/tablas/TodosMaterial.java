@@ -45,7 +45,7 @@ public class TodosMaterial extends javax.swing.JPanel {
         });
     }
     
-    private void cargarDatos() {
+    public static void cargarDatos() {
         
         JButton mod = new JButton();
         mod.setText("Modificar");
@@ -92,11 +92,11 @@ public class TodosMaterial extends javax.swing.JPanel {
         }
         
         MPTableModel modelo = new MPTableModel(datos);
-        this.jTable3.setModel(modelo);
+        jTable3.setModel(modelo);
         TableRowSorter<TableModel> order = new TableRowSorter<>(modelo);
-        this.jTable3.setRowSorter(order);
-        this.jTable3.setRowHeight(30);
-        this.jTable3.setDefaultRenderer(Object.class, new RenderTable());
+        jTable3.setRowSorter(order);
+        jTable3.setRowHeight(30);
+        jTable3.setDefaultRenderer(Object.class, new RenderTable());
         
     }
 
@@ -284,6 +284,6 @@ public class TodosMaterial extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTable2;
-    private javax.swing.JTable jTable3;
+    protected static javax.swing.JTable jTable3;
     // End of variables declaration//GEN-END:variables
 }

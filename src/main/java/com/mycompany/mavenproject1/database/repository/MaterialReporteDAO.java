@@ -15,6 +15,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
 
 /**
  *
@@ -109,6 +110,9 @@ public class MaterialReporteDAO implements IMaterialReporteDAO {
                 if (material.getCodigo() != null) {
                     existingMaterial.setCodigo(material.getCodigo());
                 }
+                if (material.getCodigoInsumo()!= null) {
+                    existingMaterial.setCodigoInsumo(material.getCodigoInsumo());
+                }
 
                 if (material.getCliente() != null) {
                     existingMaterial.setCliente(material.getCliente());
@@ -128,5 +132,27 @@ public class MaterialReporteDAO implements IMaterialReporteDAO {
             session.close();
         }
         return success;
+    }
+
+    @Override
+    public Boolean deleteAll() {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+
+        try {
+            transaction = session.beginTransaction();
+            Query query = session.createQuery("DELETE FROM MaterialReporte");
+            int deletedCount = query.executeUpdate();
+            transaction.commit();
+            return deletedCount > 0;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+            return false;
+        } finally {
+            session.close();
+        }
     }
 }

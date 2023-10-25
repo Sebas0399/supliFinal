@@ -98,7 +98,7 @@ public class MPGenerador {
                         }
                         if (si) {
 
-                            if (elem.size()>7) {
+                            if (elem.size() > 7) {
                                 System.out.println(elem);
                                 var codigo = String.valueOf((int) Double.parseDouble(elem.get(1)));
                                 var materialReporte = this.materialReporteDAO.readByCodigo(codigo);
@@ -140,7 +140,9 @@ public class MPGenerador {
                         JOptionPane.showMessageDialog(null, "Error no exite el codigo de material: " + codigo);
                         break;
                     } else {
+
                         var material = this.materialDAO.readByCodigo(materialReporte.getCodigoInsumo(), cliente.getRuc());
+                        System.out.println(material);
                         valore.add(List.of(StringUtils.agregarGuiones(factura.get(5).get(1)), Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, String.valueOf(contadorSerie), String.valueOf(contadorFila), material.getCodigo(), material.getSubpartida(), "0000", "0000", material.getDescripcion(), material.getTipoUnidad(), redondear(new BigDecimal(sumaProd)), redondear(new BigDecimal(sumaProd).divide(new BigDecimal(10))), "0"));
 
                     }
@@ -229,7 +231,6 @@ public class MPGenerador {
                                     rowData.add(String.valueOf(cell.getBooleanCellValue()));
                                 case FORMULA ->
                                     rowData.add(cell.getCellFormula());
-                                
 
                                 default ->
                                     System.out.print("");
@@ -241,10 +242,8 @@ public class MPGenerador {
 
                     archivoGeneral.add(hojaData); // Agregar el mapa de la hoja al listado general
                 }
-                Thread generarFacturasThread = new Thread(() -> {
-                    generarFacturaExcel(archivoGeneral);
-                });
-                generarFacturasThread.start();
+
+                generarFacturaExcel(archivoGeneral);
 
             } catch (IOException ex) {
                 JOptionPane.showConfirmDialog(null, "Cargue el reporte de producción");

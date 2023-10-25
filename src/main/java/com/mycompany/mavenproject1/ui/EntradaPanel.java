@@ -8,6 +8,7 @@ import com.mycompany.mavenproject1.FileUtils;
 import com.mycompany.mavenproject1.InsumosUtils;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.repository.ClienteDAO;
+import com.mycompany.mavenproject1.tablas.TodosMaterial;
 import com.mycompany.mavenproject1.tablas.TodosMaterialReporte;
 import java.awt.Color;
 
@@ -62,8 +63,10 @@ public class EntradaPanel extends javax.swing.JPanel {
         jLabel3 = new javax.swing.JLabel();
         comboCliente = new javax.swing.JComboBox<>();
         jSeparator1 = new javax.swing.JSeparator();
-        cargarInsumos2 = new javax.swing.JButton();
+        reporteInsumos = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
+        reporteCliente = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel1.setText("Cliente");
@@ -101,16 +104,27 @@ public class EntradaPanel extends javax.swing.JPanel {
             }
         });
 
-        cargarInsumos2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        cargarInsumos2.setText("Generar");
-        cargarInsumos2.addActionListener(new java.awt.event.ActionListener() {
+        reporteInsumos.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        reporteInsumos.setText("Generar");
+        reporteInsumos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cargarInsumos2ActionPerformed(evt);
+                reporteInsumosActionPerformed(evt);
             }
         });
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel6.setText("Reporte Final");
+        jLabel6.setText("Reporte clientes");
+
+        reporteCliente.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        reporteCliente.setText("Generar");
+        reporteCliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reporteClienteActionPerformed(evt);
+            }
+        });
+
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel7.setText("Reporte insumos");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -135,11 +149,17 @@ public class EntradaPanel extends javax.swing.JPanel {
                             .addComponent(cargarInsumos, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
-                .addComponent(jLabel6)
-                .addGap(18, 18, 18)
-                .addComponent(cargarInsumos2)
-                .addGap(120, 120, 120))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addGap(18, 18, 18)
+                        .addComponent(reporteInsumos))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addGap(18, 18, 18)
+                        .addComponent(reporteCliente)))
+                .addGap(86, 86, 86))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -160,11 +180,15 @@ public class EntradaPanel extends javax.swing.JPanel {
                             .addComponent(cargarInsumos)
                             .addComponent(jLabel3)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(159, 159, 159)
+                        .addGap(115, 115, 115)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(reporteInsumos)
+                            .addComponent(jLabel7))
+                        .addGap(47, 47, 47)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(cargarInsumos2)
+                            .addComponent(reporteCliente)
                             .addComponent(jLabel6))))
-                .addContainerGap(296, Short.MAX_VALUE))
+                .addContainerGap(285, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -175,6 +199,7 @@ public class EntradaPanel extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(null, "Reporte de produccion cargado correctamente");
             getPaths().put("RP", path);
             TodosMaterialReporte.regargarPanel();
+            TodosMaterialReporte.cargarDatos();
 
         } else {
             JOptionPane.showMessageDialog(null, "Ocurrio un error");
@@ -191,6 +216,8 @@ public class EntradaPanel extends javax.swing.JPanel {
             getPaths().put("IN", path);
             InsumosUtils insumosUtils = new InsumosUtils(this.paths, (Cliente) this.comboCliente.getSelectedItem());
             insumosUtils.saveAllInsumos();
+            TodosMaterial.cargarDatos();
+            TodosMaterialReporte.regargarPanel();
 
         } else {
             JOptionPane.showMessageDialog(null, "Ocurrio un error");
@@ -198,7 +225,7 @@ public class EntradaPanel extends javax.swing.JPanel {
 
     }//GEN-LAST:event_cargarInsumosActionPerformed
 
-    private void cargarInsumos2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cargarInsumos2ActionPerformed
+    private void reporteInsumosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reporteInsumosActionPerformed
         // TODO add your handling code here:
         if (this.paths.get("RP") == null) {
             JOptionPane.showMessageDialog(null, "Cargue el reporte de produccion");
@@ -206,13 +233,13 @@ public class EntradaPanel extends javax.swing.JPanel {
         } else {
             JDialog dialog = new JDialog();
             dialog.setTitle("Generar");
-            dialog.getContentPane().add(new FormInformeFinal(this.paths.get("RP"), cliente));
+            dialog.getContentPane().add(new FormInformeFinal(this.paths.get("RP"), cliente,"insumos"));
             dialog.setSize(400, 150);
             dialog.setVisible(true);
         }
 
 
-    }//GEN-LAST:event_cargarInsumos2ActionPerformed
+    }//GEN-LAST:event_reporteInsumosActionPerformed
 
     private void comboClienteItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_comboClienteItemStateChanged
         // TODO add your handling code here:
@@ -223,17 +250,33 @@ public class EntradaPanel extends javax.swing.JPanel {
         cliente = (Cliente) comboCliente.getSelectedItem();
     }//GEN-LAST:event_comboClienteActionPerformed
 
+    private void reporteClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reporteClienteActionPerformed
+        // TODO add your handling code here:
+        if (this.paths.get("RP") == null) {
+            JOptionPane.showMessageDialog(null, "Cargue el reporte de produccion");
+
+        } else {
+            JDialog dialog = new JDialog();
+            dialog.setTitle("Generar");
+            dialog.getContentPane().add(new FormInformeFinal(this.paths.get("RP"), cliente,"cliente"));
+            dialog.setSize(400, 150);
+            dialog.setVisible(true);
+        }
+    }//GEN-LAST:event_reporteClienteActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cargarInsumos;
-    private javax.swing.JButton cargarInsumos2;
     private javax.swing.JButton cargarReporteProduccion;
     private javax.swing.JComboBox<Cliente> comboCliente;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JButton reporteCliente;
+    private javax.swing.JButton reporteInsumos;
     // End of variables declaration//GEN-END:variables
 
     /**

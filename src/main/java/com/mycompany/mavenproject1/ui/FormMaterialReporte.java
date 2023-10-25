@@ -25,8 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import org.apache.poi.ss.usermodel.Cell;
@@ -62,18 +64,19 @@ public class FormMaterialReporte extends javax.swing.JPanel {
         cargarDatos();
         this.paths = EntradaPanel.paths;
         if (this.paths.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Cargue el reporte de produccion");
+            //JOptionPane.showMessageDialog(null, "Cargue el reporte de produccion");
             return;
-            
+
         }
 
         this.codigos = generarFacturaExcel(cargarFacturas());
         this.codigos.stream().forEach(x -> this.comboMaterial.addItem(x));
+        this.codigos.stream().forEach(x -> mr.create(new MaterialReporte(x)));
 
     }
 
     public FormMaterialReporte(String codigo) {
-        
+
         initComponents();
         cargarDatos();
         this.paths = EntradaPanel.paths;
@@ -82,13 +85,18 @@ public class FormMaterialReporte extends javax.swing.JPanel {
             return;
         }
         this.codigos = generarFacturaExcel(cargarFacturas());
+        //Guardar todos los codigos
+
         this.btnGuardar.setText("Actualizar");
         materialReporte = mr.readByCodigo(codigo);
-        System.out.println(materialReporte);
-        this.comboMaterial.setSelectedItem(codigo);
-        var itemSelected = this.insumos.stream().filter(x -> x.getDescripcion().equals(materialReporte.getDescripcion()));
-        this.comboInsumos.setSelectedItem(itemSelected.findAny().get());
+       
+        Supplier<Stream<Material>>  itemSelected = ()->this.insumos.stream().filter(x -> x.getDescripcion().equals(materialReporte.getDescripcion()));
+        if (itemSelected.get().findAny().isPresent()) {
+            this.comboInsumos.setSelectedItem(itemSelected.get().findAny().get());
+
+        }
         this.codigos.stream().forEach(x -> this.comboMaterial.addItem(x));
+        this.comboMaterial.setSelectedItem(codigo);
 
     }
 

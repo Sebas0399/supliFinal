@@ -36,6 +36,11 @@ public class MaterialReporte {
         this.cliente = cliente;
     }
 
+    public MaterialReporte(String codigo) {
+        this.codigo = codigo;
+    }
+    
+
     public MaterialReporte() {
     }
 

@@ -15,8 +15,15 @@ import java.util.List;
 public interface IMaterialReporteDAO {
 
     public Boolean create(MaterialReporte material);
+
     public Boolean delete(String codigo);
+
     public List<MaterialReporte> readAll();
+
     public MaterialReporte readByCodigo(String codigo);
-    public Boolean update(MaterialReporte materialReporte,String codigo);
+
+    public Boolean update(MaterialReporte materialReporte, String codigo);
+
+    public Boolean deleteAll();
+
 }

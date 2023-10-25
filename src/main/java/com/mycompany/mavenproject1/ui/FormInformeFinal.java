@@ -5,7 +5,8 @@
 package com.mycompany.mavenproject1.ui;
 
 import com.mycompany.mavenproject1.FileUtils;
-import com.mycompany.mavenproject1.InformeFinalUtils;
+import com.mycompany.mavenproject1.InformeClientesUtils;
+import com.mycompany.mavenproject1.InformeInsumosUtils;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.toedter.calendar.JDateChooser;
 import java.awt.Color;
@@ -30,7 +31,7 @@ public class FormInformeFinal extends javax.swing.JPanel {
     private JDateChooser dateChooser2;
     private Cliente cliente;
 
-    public FormInformeFinal(String path,Cliente cliente) {
+    public FormInformeFinal(String path, Cliente cliente, String tipo) {
         initComponents();
 
         this.setBackground(Color.LIGHT_GRAY);
@@ -54,27 +55,37 @@ public class FormInformeFinal extends javax.swing.JPanel {
         filterButton.setBounds(150, 70, 150, 30);
 
         this.add(filterButton);
-
-        filterButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        if (tipo.equals("cliente")) {
+            filterButton.addActionListener((ActionEvent e) -> {
                 Date inicio = dateChooser.getDate();
 
                 Date fin = dateChooser2.getDate();
                 Runnable mRunnable = () -> {
                     Cargando c = new Cargando("Generando");
                     c.setVisible(true);
-                    InformeFinalUtils ifu = new InformeFinalUtils(path, FileUtils.saveDataOne(),cliente);
-
+                    InformeClientesUtils ifu = new InformeClientesUtils(path, FileUtils.saveDataOne(), cliente);
                     ifu.generarInforme(inicio, quitarHora(fin));
                     c.dispose();
                 };
                 Thread miHilo = new Thread(mRunnable);
                 miHilo.start();
-                
+            });
+        } else {
+            filterButton.addActionListener((ActionEvent e) -> {
+                Date inicio = dateChooser.getDate();
 
-            }
-        });
-
+                Date fin = dateChooser2.getDate();
+                Runnable mRunnable = () -> {
+                    Cargando c = new Cargando("Generando");
+                    c.setVisible(true);
+                    InformeInsumosUtils ifu = new InformeInsumosUtils(path, FileUtils.saveDataOne(), cliente);
+                    ifu.generarInforme(inicio, quitarHora(fin));
+                    c.dispose();
+                };
+                Thread miHilo = new Thread(mRunnable);
+                miHilo.start();
+            });
+        }
     }
 
     public static Date quitarHora(Date fecha) {
