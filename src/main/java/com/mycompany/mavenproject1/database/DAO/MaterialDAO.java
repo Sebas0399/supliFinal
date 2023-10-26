@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.mavenproject1.database.repository;
+package com.mycompany.mavenproject1.database.DAO;
 
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.model.Material;
@@ -204,5 +204,32 @@ public class MaterialDAO implements IMaterialDAO {
         } finally {
             session.close();
         }
+    }
+
+    @Override
+    public Material readLike(String codigo, String ruc) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+        Material material = null;
+
+        try {
+            transaction = session.beginTransaction();
+            material = session.createQuery("SELECT m FROM Material m WHERE m.codigo LIKE :codigo AND m.cliente.ruc = :ruc", Material.class)
+                    .setParameter("codigo", "%" + codigo + "%")
+                    .setParameter("ruc", ruc)
+                    .uniqueResult();
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+
+            e.printStackTrace();
+            return null;
+        } finally {
+            session.close();
+        }
+
+        return material;
     }
 }

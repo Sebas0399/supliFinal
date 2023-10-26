@@ -9,8 +9,8 @@ package com.mycompany.mavenproject1;
  * @author Sebas
  */
 import com.mycompany.mavenproject1.database.model.Cliente;
-import com.mycompany.mavenproject1.database.repository.MaterialDAO;
-import com.mycompany.mavenproject1.database.repository.MaterialReporteDAO;
+import com.mycompany.mavenproject1.database.DAO.MaterialDAO;
+import com.mycompany.mavenproject1.database.DAO.MaterialReporteDAO;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -77,7 +77,6 @@ public class MPGenerador {
         for (Map.Entry<String, List<Map<Integer, List<String>>>> entry : rucFacturas.entrySet()) {
             c++;
             String ruc = entry.getKey();
-            System.out.println(ruc);
             List<Map<Integer, List<String>>> facturas = entry.getValue();
             List<List<String>> valore = new ArrayList<>();
             var contadorSerie = 1;
@@ -99,7 +98,6 @@ public class MPGenerador {
                         if (si) {
 
                             if (elem.size() > 7) {
-                                System.out.println(elem);
                                 var codigo = String.valueOf((int) Double.parseDouble(elem.get(1)));
                                 var materialReporte = this.materialReporteDAO.readByCodigo(codigo);
                                 if (materialReporte != null) {
@@ -114,22 +112,31 @@ public class MPGenerador {
                         }
                     }
                 }
-                var almidon = this.materialDAO.readByCodigo("ALMIDON", cliente.getRuc());
-                System.out.println(suma);
-                String almidonTotal = (almidon.getCoeficienteConsumo() != null
-                        ? redondear(new BigDecimal(suma).multiply(almidon.getCoeficienteConsumo()))
-                        : "");
-                var cera = this.materialDAO.readByCodigo("CERA1", cliente.getRuc());
-                String ceraTotal = (cera.getCoeficienteConsumo() != null
-                        ? redondear(new BigDecimal(suma).multiply(cera.getCoeficienteConsumo()))
-                        : "");
+                if(suma==0){
+                    JOptionPane.showMessageDialog(null, "La factura "+factura.get(5).get(1)+"no tiene materiales");
+                    break;
+                }
+                var almidon = this.materialDAO.readLike("ALMIDON", cliente.getRuc());
+                if (almidon != null) {
+                    String almidonTotal = (almidon.getCoeficienteConsumo() != null
+                            ? redondear(new BigDecimal(suma).multiply(almidon.getCoeficienteConsumo()))
+                            : "");
+                    var almidonFila = List.of(String.valueOf(StringUtils.agregarGuiones(factura.get(5).get(1))), Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, String.valueOf(contadorSerie), String.valueOf(contadorFila), almidon.getCodigo(), almidon.getSubpartida(), "0000", "0000", almidon.getDescripcion(), almidon.getTipoUnidad(), almidonTotal, "0", "0");
+                    contadorFila++;
+                    valore.add(almidonFila);
+                }
 
-                var p = List.of(String.valueOf(StringUtils.agregarGuiones(factura.get(5).get(1))), Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, String.valueOf(contadorSerie), String.valueOf(contadorFila), cera.getCodigo(), cera.getSubpartida(), "0000", "0000", cera.getDescripcion(), cera.getTipoUnidad(), ceraTotal, "0", "0");
-                contadorFila++;
-                var q = List.of(String.valueOf(StringUtils.agregarGuiones(factura.get(5).get(1))), Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, String.valueOf(contadorSerie), String.valueOf(contadorFila), almidon.getCodigo(), almidon.getSubpartida(), "0000", "0000", almidon.getDescripcion(), almidon.getTipoUnidad(), almidonTotal, "0", "0");
-                contadorFila++;
-                valore.add(p);
-                valore.add(q);
+                var cera = this.materialDAO.readLike("CERA", cliente.getRuc());
+                if (cera != null) {
+                    String ceraTotal = (cera.getCoeficienteConsumo() != null
+                            ? redondear(new BigDecimal(suma).multiply(cera.getCoeficienteConsumo()))
+                            : "");
+                    var ceraFila = List.of(String.valueOf(StringUtils.agregarGuiones(factura.get(5).get(1))), Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, String.valueOf(contadorSerie), String.valueOf(contadorFila), cera.getCodigo(), cera.getSubpartida(), "0000", "0000", cera.getDescripcion(), cera.getTipoUnidad(), ceraTotal, "0", "0");
+                    contadorFila++;
+                    valore.add(ceraFila);
+
+                }
+
                 for (Map.Entry<String, Double> entrada : codigoSumaMap.entrySet()) {
                     var codigo = entrada.getKey();
                     var sumaProd = entrada.getValue();

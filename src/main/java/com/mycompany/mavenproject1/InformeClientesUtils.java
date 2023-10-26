@@ -7,8 +7,8 @@ package com.mycompany.mavenproject1;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.model.Material;
 import com.mycompany.mavenproject1.database.model.MaterialReporte;
-import com.mycompany.mavenproject1.database.repository.MaterialDAO;
-import com.mycompany.mavenproject1.database.repository.MaterialReporteDAO;
+import com.mycompany.mavenproject1.database.DAO.MaterialDAO;
+import com.mycompany.mavenproject1.database.DAO.MaterialReporteDAO;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -20,8 +20,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -110,6 +112,8 @@ public class InformeClientesUtils {
             var si = false;
             var filtro = false;
             Map<String, List<String>> producto = new HashMap<>();
+            Map<String, Integer> facturaNro = new HashMap<>();
+
             // factura.get(si);
             //System.err.println(factura.get(0));
             //---------------Cliente---------------//
@@ -152,6 +156,7 @@ public class InformeClientesUtils {
                         if (elem.contains("TOTAL")) {
                             break;
                         } else {
+                            facturaNro.put(factura.get(4).get(1), 0);
                             producto.put(elem.get(2), List.of(cliente.get(0), elem.get(1), elem.get(3), Constantes.SUBPARTIDA_FC, "U", extraerEnteros(elem.get(10))));
                         }
 
@@ -180,6 +185,8 @@ public class InformeClientesUtils {
 
                 // int cantidadItems = cantidadItemsPorMaterial.getOrDefault(textoMaterial, 0);
             }
+            System.out.println(facturaNro.size());
+
         }
 
         generarExcel(lFinal);

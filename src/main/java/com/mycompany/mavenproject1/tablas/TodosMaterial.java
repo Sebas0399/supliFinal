@@ -6,7 +6,7 @@ package com.mycompany.mavenproject1.tablas;
 
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.model.Material;
-import com.mycompany.mavenproject1.database.repository.MaterialDAO;
+import com.mycompany.mavenproject1.database.DAO.MaterialDAO;
 import com.mycompany.mavenproject1.tablas.model.MPTableModel;
 import com.mycompany.mavenproject1.tablas.model.RenderTable;
 import com.mycompany.mavenproject1.ui.FormMaterial;

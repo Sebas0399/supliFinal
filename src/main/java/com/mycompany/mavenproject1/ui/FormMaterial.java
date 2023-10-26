@@ -6,8 +6,8 @@ package com.mycompany.mavenproject1.ui;
 
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.model.Material;
-import com.mycompany.mavenproject1.database.repository.ClienteDAO;
-import com.mycompany.mavenproject1.database.repository.MaterialDAO;
+import com.mycompany.mavenproject1.database.DAO.ClienteDAO;
+import com.mycompany.mavenproject1.database.DAO.MaterialDAO;
 
 import java.awt.Color;
 import java.awt.Window;

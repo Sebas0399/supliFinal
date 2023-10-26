@@ -10,7 +10,7 @@ import com.mycompany.mavenproject1.FileUtils;
 import com.mycompany.mavenproject1.HibernateUtil;
 import com.mycompany.mavenproject1.StringUtils;
 import com.mycompany.mavenproject1.database.model.MaterialReporte;
-import com.mycompany.mavenproject1.database.repository.MaterialReporteDAO;
+import com.mycompany.mavenproject1.database.DAO.MaterialReporteDAO;
 import com.mycompany.mavenproject1.tablas.model.MPReporteTableModel;
 import com.mycompany.mavenproject1.tablas.model.RenderTable;
 import com.mycompany.mavenproject1.ui.FormMaterialReporte;
@@ -52,7 +52,7 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
     public TodosMaterialReporte(Map<String, String> path) {
         initComponents();
         this.paths = path;
-        this.jTable1.setRowHeight(30);
+        jTable1.setRowHeight(30);
         this.setBounds(0, 0, 800, 600);
         this.setBackground(Color.LIGHT_GRAY);
         cargarDatos();
@@ -63,7 +63,7 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
         menuIActualizar.addActionListener((ActionEvent e) -> {
             cargarDatos();
         });
-        this.jPanel1.add(new FormMaterialReporte());
+        jPanel1.add(new FormMaterialReporte());
     }
 
     /**
@@ -168,45 +168,25 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         // TODO add your handling code here:
-        var col = this.jTable1.getSelectedColumn();
-        var row = this.jTable1.getSelectedRow();
+        var col = jTable1.getSelectedColumn();
+        var row = jTable1.getSelectedRow();
         MaterialReporteDAO mr = new MaterialReporteDAO(HibernateUtil.getSessionFactory());
         if (col == 5) {
 
             var option = JOptionPane.showConfirmDialog(null, "Se va a eliminar el material");
             if (option == JOptionPane.YES_OPTION) {
 
-                String codigo = this.jTable1.getModel().getValueAt(row, 0).toString();
+                String codigo = 
+                        jTable1.getModel().getValueAt(row, 0).toString();
                 System.out.println(mr.delete(codigo));
                 cargarDatos();
             }
-            //System.out.println(this.jTable1.getModel().getValueAt(row, 0));
-            //mr.delete();
-        } else if (col == 4) {
-            FormMaterialReporte fr = new FormMaterialReporte(this.jTable1.getModel().getValueAt(row, 0).toString());
+
+        } else {
+            FormMaterialReporte fr = new FormMaterialReporte(jTable1.getModel().getValueAt(row, 0).toString());
             jPanel1.removeAll();
-
             jPanel1.add(fr);
-            //this.jPanel1.add(fr);
 
-            /* JDialog dialog = new JDialog();
-            dialog.setTitle("Actualizar");
-
-            dialog.getContentPane().add(fr);
-            dialog.setSize(900, 130);
-            dialog.setVisible(true);
-            dialog.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    cargarDatos();
-                }
-
-                @Override
-                public void windowClosed(WindowEvent e) {
-                    cargarDatos();
-                }
-
-            });*/
         }
 
     }//GEN-LAST:event_jTable1MouseClicked

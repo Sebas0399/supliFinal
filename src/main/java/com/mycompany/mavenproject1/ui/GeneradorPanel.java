@@ -8,7 +8,7 @@ import com.mycompany.mavenproject1.FCGenerador;
 import com.mycompany.mavenproject1.MPGenerador;
 import com.mycompany.mavenproject1.PTGenerador;
 import com.mycompany.mavenproject1.database.model.Cliente;
-import com.mycompany.mavenproject1.database.repository.ClienteDAO;
+import com.mycompany.mavenproject1.database.DAO.ClienteDAO;
 import java.awt.Color;
 import java.util.Map;
 import javax.swing.JOptionPane;
@@ -84,7 +84,7 @@ public class GeneradorPanel extends javax.swing.JPanel {
         });
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel3.setText("Generar Medios de Producción");
+        jLabel3.setText("Generar Material de Producción");
 
         comboCliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

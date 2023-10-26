@@ -4,15 +4,19 @@
  */
 package com.mycompany.mavenproject1;
 
-import com.mycompany.mavenproject1.database.model.Cliente;
-import com.mycompany.mavenproject1.database.model.Material;
 import com.mycompany.mavenproject1.database.DAO.MaterialDAO;
+import com.mycompany.mavenproject1.database.DAO.MaterialReporteDAO;
+import com.mycompany.mavenproject1.database.model.Cliente;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,28 +33,26 @@ import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 /**
  *
- * @author Sebas
+ * @author sebas
  */
-public class InsumosUtils {
+public class ValidarUtils {
 
-    MaterialDAO materialDAO;
-    Map<String, String> paths;
-    Cliente cliente;
+    private String ruta;
 
-    public InsumosUtils(Map<String, String> paths,Cliente cliente) {
-        materialDAO = new MaterialDAO();
-        this.paths = paths;
-        this.cliente=cliente;
+    public ValidarUtils(String ruta) {
+        this.ruta = ruta;
     }
 
-    public List<Map<Integer, List<String>>> convertirInsumos() {
+    public List<Map<Integer, List<String>>> convertir(String path) {
 
         try {
             List<Map<Integer, List<String>>> archivoGeneral = new ArrayList<>();
-            FileInputStream file = new FileInputStream(new File(this.paths.get("IN")));
-            Workbook workbook = new HSSFWorkbook(file);
+            FileInputStream file = new FileInputStream(new File(path));
+            Workbook workbook = new XSSFWorkbook(file);
             int numHojas = workbook.getNumberOfSheets();
 
             for (int i = 0; i <= numHojas - 1; i++) {
@@ -69,7 +71,7 @@ public class InsumosUtils {
                                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                                     data.get(j).add(sdf.format(cell.getDateCellValue()) + "");
                                 } else {
-                                    data.get(j).add((int) cell.getNumericCellValue() + "");
+                                    data.get(j).add(cell.getNumericCellValue() + "");
                                 }
                             }
                             case BOOLEAN ->
@@ -93,42 +95,53 @@ public class InsumosUtils {
 
     }
 
-    public Boolean saveAllInsumos() {
-        List<Map<Integer, List<String>>> archivoGeneral = this.convertirInsumos();
-        materialDAO.deleteAll();
-        for (var hoja : archivoGeneral) {
-            for (int i = 2; i < hoja.size(); i++) {
-                var fila = hoja.get(i);
-                Material material = new Material();
-               
-                material.setCliente(cliente);
-                material.setCodigo(fila.get(0));
-                material.setSubpartida(fila.get(1));
-                material.setDescripcion(fila.get(2));
-                material.setSaldoInsumo(new BigDecimal(convertir(fila.get(6))));
-                material.setTipoUnidad(fila.get(3));
-                material.setCalculaDesperdicio(false);
-                material.setAplicaFormula(false);
-               
-                materialDAO.create(material);
-            }
-        }
-        return null;
-    }
+    public void validar() {
 
-    public String convertir(String numero) {
-        var numeros = numero.toCharArray();
-        StringBuilder nuevoNumero=new StringBuilder();
-                
-        for (var num : numeros) {
-            switch (num) {
-                case '.' -> {
+        List<Map<Integer, List<String>>> listaFacturas = convertir(ruta);
+
+        for (Map<Integer, List<String>> factura : listaFacturas) {
+            var si = false;
+            Map<String, Integer> facturaNro = new HashMap<>();
+            // factura.get(si);
+            //System.err.println(factura.get(0));
+            //---------------Cliente---------------//
+            for (int i = 0; i < factura.size(); i++) {
+
+                var elem = factura.get(i);
+
+                if (elem != null) {
+
+                    if (elem.contains("Fecha Fabricación")) {
+                        si = true;
+                        i++;
+                        elem = factura.get(i);
+                    }
+
+                    if (si) {
+
+                        if (elem.contains("TOTAL") && elem.size() < 4) {
+
+                            break;
+                        } else if (elem.contains("TOTAL") && elem.size() > 4) {
+                            facturaNro.put(elem.get(1), 0);
+                            break;
+
+                        } else {
+
+                            facturaNro.put(elem.get(1), 0);
+
+                        }
+
+                    }
+
                 }
-                case ',' -> nuevoNumero.append('.');
-                default -> nuevoNumero.append(num);
+
             }
+            if(facturaNro.size()>=2){
+                JOptionPane.showMessageDialog(null, "Error en la factura Nro "+facturaNro.keySet().toString());
+            }
+           
         }
-        return nuevoNumero.toString();
     }
 
 }

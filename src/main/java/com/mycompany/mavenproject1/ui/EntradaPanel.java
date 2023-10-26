@@ -6,8 +6,9 @@ package com.mycompany.mavenproject1.ui;
 
 import com.mycompany.mavenproject1.FileUtils;
 import com.mycompany.mavenproject1.InsumosUtils;
+import com.mycompany.mavenproject1.ValidarUtils;
 import com.mycompany.mavenproject1.database.model.Cliente;
-import com.mycompany.mavenproject1.database.repository.ClienteDAO;
+import com.mycompany.mavenproject1.database.DAO.ClienteDAO;
 import com.mycompany.mavenproject1.tablas.TodosMaterial;
 import com.mycompany.mavenproject1.tablas.TodosMaterialReporte;
 import java.awt.Color;
@@ -196,8 +197,11 @@ public class EntradaPanel extends javax.swing.JPanel {
         // TODO add your handling code here:
         var path = FileUtils.cargarData();
         if (path != null) {
+            
             JOptionPane.showMessageDialog(null, "Reporte de produccion cargado correctamente");
             getPaths().put("RP", path);
+            ValidarUtils validar=new ValidarUtils(path);
+            validar.validar();
             TodosMaterialReporte.regargarPanel();
             TodosMaterialReporte.cargarDatos();
 
