@@ -9,10 +9,11 @@ import com.mycompany.mavenproject1.MPGenerador;
 import com.mycompany.mavenproject1.PTGenerador;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.DAO.ClienteDAO;
+import com.mycompany.mavenproject1.database.DAO.ReporteDAO;
+import com.mycompany.mavenproject1.utils.HibernateUtil;
 import java.awt.Color;
 import java.util.Map;
 import javax.swing.JOptionPane;
-import javax.swing.JProgressBar;
 
 /**
  *
@@ -25,14 +26,14 @@ public class GeneradorPanel extends javax.swing.JPanel {
      *
      * @param path
      */
-    private Map<String, String> paths;
     private Cliente cliente;
+    ReporteDAO reporteDAO;
 
     public GeneradorPanel(Map<String, String> path) {
         initComponents();
         cargarClientes();
         this.setBackground(Color.LIGHT_GRAY);
-        this.paths = path;
+        this.reporteDAO=new ReporteDAO(HibernateUtil.getSessionFactory());
         this.cliente = (Cliente) comboCliente.getSelectedItem();
     }
 
@@ -134,14 +135,14 @@ public class GeneradorPanel extends javax.swing.JPanel {
 
     private void generarFacturasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarFacturasActionPerformed
         // TODO add your handling code here:
-        if (this.paths.get("RP") == null) {
+        if (reporteDAO.read() == null) {
             JOptionPane.showMessageDialog(null, "Ingrese el reporte de produccion");
         } else {
             Runnable mRunnable = () -> {
                 Cargando c = new Cargando("Generando");
                 c.setVisible(true);
 
-                FCGenerador generator = new FCGenerador(paths, cliente);
+                FCGenerador generator = new FCGenerador(cliente);
                 generator.cargarFacturas();
                 c.dispose();
 
@@ -155,14 +156,14 @@ public class GeneradorPanel extends javax.swing.JPanel {
 
     private void generarProductoTerminadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarProductoTerminadoActionPerformed
         // TODO add your handling code here:
-        if (this.paths.get("RP") == null) {
+        if (reporteDAO.read() == null ) {
             JOptionPane.showMessageDialog(null, "Ingrese el reporte de produccion");
 
         } else {
             Runnable mRunnable = () -> {
                 Cargando c = new Cargando("Generando");
                 c.setVisible(true);
-                PTGenerador generator = new PTGenerador(paths);
+                PTGenerador generator = new PTGenerador();
                 generator.cargarFacturas();
                 c.dispose();
 
@@ -180,14 +181,14 @@ public class GeneradorPanel extends javax.swing.JPanel {
     }
     private void generarMediosDeProduccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarMediosDeProduccionActionPerformed
         // TODO add your handling code here:
-        if (this.paths.get("RP") == null) {
+        if (reporteDAO.read() == null) {
             JOptionPane.showMessageDialog(null, "Ingrese el reporte de produccion");
 
         } else {
             Runnable mRunnable = () -> {
                 Cargando c = new Cargando("Generando");
                 c.setVisible(true);
-                MPGenerador generator = new MPGenerador(paths, cliente);
+                MPGenerador generator = new MPGenerador( cliente);
                 generator.cargarFacturas();
                 c.dispose();
 

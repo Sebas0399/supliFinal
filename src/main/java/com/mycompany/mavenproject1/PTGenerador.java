@@ -4,7 +4,10 @@
  */
 package com.mycompany.mavenproject1;
 
+import com.mycompany.mavenproject1.database.DAO.ReporteDAO;
+import com.mycompany.mavenproject1.database.model.Reporte;
 import com.mycompany.mavenproject1.utils.FileUtils;
+import com.mycompany.mavenproject1.utils.HibernateUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -39,11 +42,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class PTGenerador {
 
-    private Map<String, String> paths;
     private String savePath;
+    private ReporteDAO reporteDAO;
 
-    public PTGenerador(Map<String, String> paths) {
-        this.paths = paths;
+    public PTGenerador() {
+        this.reporteDAO=new ReporteDAO(HibernateUtil.getSessionFactory());
     }
 
     private List<String> extraerNumeros(String input) {
@@ -161,7 +164,8 @@ public class PTGenerador {
         if(this.savePath!=null){
             try {
             List<Map<Integer, List<String>>> archivoGeneral = new ArrayList<>();
-            FileInputStream file = new FileInputStream(new File(this.paths.get("RP")));
+            Reporte  reporte=reporteDAO.read();
+            FileInputStream file = new FileInputStream(new File(reporte.getRuta()));
             Workbook workbook = new XSSFWorkbook(file);
             int numHojas = workbook.getNumberOfSheets();
 

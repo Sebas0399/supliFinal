@@ -6,7 +6,9 @@ package com.mycompany.mavenproject1.utils;
 
 import com.mycompany.mavenproject1.Constantes;
 import com.mycompany.mavenproject1.FCGenerador;
+import com.mycompany.mavenproject1.database.DAO.ReporteDAO;
 import com.mycompany.mavenproject1.database.model.Cliente;
+import com.mycompany.mavenproject1.database.model.Reporte;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,14 +44,15 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class InformeClientesUtils {
 
-    private String reporteVentas;
     private String ruta;
     private Cliente cliente;
+    private ReporteDAO reporteDAO;
 
-    public InformeClientesUtils(String reporteVentas, String ruta, Cliente cliente) {
-        this.reporteVentas = reporteVentas;
+    public InformeClientesUtils(String ruta, Cliente cliente) {
         this.ruta = ruta;
         this.cliente = cliente;
+        this.reporteDAO = new ReporteDAO(HibernateUtil.getSessionFactory());
+
     }
 
     public List<Map<Integer, List<String>>> convertir(String path) {
@@ -101,7 +104,8 @@ public class InformeClientesUtils {
     }
 
     public void generarInforme(Date inicio, Date fin) {
-        List<Map<Integer, List<String>>> listaFacturas = convertir(reporteVentas);
+        Reporte reporte=reporteDAO.read();
+        List<Map<Integer, List<String>>> listaFacturas = convertir(reporte.getRuta());
 
         List<List<String>> lFinal = new ArrayList<>();
 
@@ -110,7 +114,6 @@ public class InformeClientesUtils {
             var filtro = false;
             Map<String, List<String>> producto = new HashMap<>();
             Map<String, Integer> facturaNro = new HashMap<>();
-            System.err.println(factura.get(2));
             var cliente = factura.get(2);
             for (int i = 0; i < factura.size(); i++) {
 
@@ -267,9 +270,8 @@ public class InformeClientesUtils {
                 r.createCell(k++).setCellValue(j);
             }
         }
-        
 
-         String fileLocation = this.ruta + ".xls";
+        String fileLocation = this.ruta + ".xls";
         System.out.println(fileLocation);
         try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
             workbook.write(outputStream);

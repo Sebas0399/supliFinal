@@ -13,6 +13,8 @@ import com.mycompany.mavenproject1.utils.HibernateUtil;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.DAO.MaterialDAO;
 import com.mycompany.mavenproject1.database.DAO.MaterialReporteDAO;
+import com.mycompany.mavenproject1.database.DAO.ReporteDAO;
+import com.mycompany.mavenproject1.database.model.Reporte;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -46,15 +48,15 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class MPGenerador {
 
-    private Map<String, String> paths;
     private MaterialReporteDAO materialReporteDAO = new MaterialReporteDAO(HibernateUtil.getSessionFactory());
     private MaterialDAO materialDAO = new MaterialDAO();
     private String savePath;
     private Cliente cliente;
+    private ReporteDAO reporteDAO;
 
-    public MPGenerador(Map<String, String> paths, Cliente cliente) {
-        this.paths = paths;
+    public MPGenerador(Cliente cliente) {
         this.cliente = cliente;
+        this.reporteDAO=new ReporteDAO(HibernateUtil.getSessionFactory());
     }
 
     private static String obtenerRuc(Map<Integer, List<String>> factura) {
@@ -213,7 +215,8 @@ public class MPGenerador {
             try {
 
                 List<Map<Integer, List<String>>> archivoGeneral = new ArrayList<>();
-                FileInputStream file = new FileInputStream(new File(this.paths.get("RP")));
+                Reporte reporte=reporteDAO.read();
+                FileInputStream file = new FileInputStream(new File(reporte.getRuta()));
                 Workbook workbook = new XSSFWorkbook(file);
                 int numHojas = workbook.getNumberOfSheets();
 

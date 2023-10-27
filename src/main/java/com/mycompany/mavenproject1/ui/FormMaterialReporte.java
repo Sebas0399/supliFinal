@@ -12,6 +12,8 @@ import com.mycompany.mavenproject1.database.model.MaterialReporte;
 import com.mycompany.mavenproject1.database.DAO.ClienteDAO;
 import com.mycompany.mavenproject1.database.DAO.MaterialDAO;
 import com.mycompany.mavenproject1.database.DAO.MaterialReporteDAO;
+import com.mycompany.mavenproject1.database.DAO.ReporteDAO;
+import com.mycompany.mavenproject1.database.model.Reporte;
 import com.mycompany.mavenproject1.tablas.TodosMaterialReporte;
 import java.awt.Cursor;
 import java.awt.Window;
@@ -49,12 +51,14 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class FormMaterialReporte extends javax.swing.JPanel {
 
-    private Map<String, String> paths;
     List<Material> insumos;
     MaterialReporteDAO mr = new MaterialReporteDAO(HibernateUtil.getSessionFactory());
     MaterialDAO md = new MaterialDAO();
     MaterialReporte materialReporte;
     List<String> codigos;
+    ReporteDAO reporteDAO;
+            
+    Reporte reporte;
 
     /**
      * Creates new form FormMaterialReporte
@@ -63,8 +67,9 @@ public class FormMaterialReporte extends javax.swing.JPanel {
 
         initComponents();
         cargarDatos();
-        this.paths = EntradaPanel.paths;
-        if (this.paths.isEmpty()) {
+        this.reporteDAO=new ReporteDAO(HibernateUtil.getSessionFactory());
+        reporte=this.reporteDAO.read();
+        if (reporte==null) {
             //JOptionPane.showMessageDialog(null, "Cargue el reporte de produccion");
             return;
 
@@ -80,10 +85,12 @@ public class FormMaterialReporte extends javax.swing.JPanel {
 
         initComponents();
         cargarDatos();
-        this.paths = EntradaPanel.paths;
-        if (this.paths.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Cargue el reporte de produccion");
+        this.reporteDAO=new ReporteDAO(HibernateUtil.getSessionFactory());
+        reporte=this.reporteDAO.read();
+        if (reporte==null) {
+            //JOptionPane.showMessageDialog(null, "Cargue el reporte de produccion");
             return;
+
         }
         this.codigos = generarFacturaExcel(cargarFacturas());
         //Guardar todos los codigos
@@ -175,7 +182,7 @@ public class FormMaterialReporte extends javax.swing.JPanel {
         try {
 
             List<Map<Integer, List<String>>> archivoGeneral = new ArrayList<>();
-            FileInputStream file = new FileInputStream(new File(this.paths.get("RP")));
+            FileInputStream file = new FileInputStream(new File(reporte.getRuta()));
             Workbook workbook = new XSSFWorkbook(file);
             int numHojas = workbook.getNumberOfSheets();
 

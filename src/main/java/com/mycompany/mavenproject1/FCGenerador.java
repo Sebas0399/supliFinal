@@ -4,8 +4,11 @@
  */
 package com.mycompany.mavenproject1;
 
+import com.mycompany.mavenproject1.database.DAO.ReporteDAO;
 import com.mycompany.mavenproject1.utils.FileUtils;
 import com.mycompany.mavenproject1.database.model.Cliente;
+import com.mycompany.mavenproject1.database.model.Reporte;
+import com.mycompany.mavenproject1.utils.HibernateUtil;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -29,13 +32,15 @@ import static org.apache.poi.ss.usermodel.CellType.STRING;
  */
 public class FCGenerador {
 
-    private Map<String, String> paths;
+   
     private String savePath;
     private Cliente cliente;
+    ReporteDAO reporteDAO;
 
-    public FCGenerador(Map<String, String> paths, Cliente cliente) {
-        this.paths = paths;
-        this.cliente=cliente;
+    public FCGenerador( Cliente cliente) {
+        
+        this.cliente = cliente;
+        reporteDAO=new ReporteDAO(HibernateUtil.getSessionFactory());
     }
 
     private List<String> extraerNumeros(String input) {
@@ -117,7 +122,7 @@ public class FCGenerador {
             }
         }
 
-        String fileLocation = this.savePath + "\\" +StringUtils.tranformarNombre(cliente.getNombre())+ "_FC_" + nombreRuc + ".xls";
+        String fileLocation = this.savePath + "\\" + StringUtils.tranformarNombre(cliente.getNombre()) + "_FC_" + nombreRuc + ".xls";
 
         try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
             workbook.write(outputStream);
@@ -140,7 +145,8 @@ public class FCGenerador {
         if (this.savePath != null) {
             try {
                 List<Map<Integer, List<String>>> archivoGeneral = new ArrayList<>();
-                FileInputStream file = new FileInputStream(new File(this.paths.get("RP")));
+                Reporte reporte=this.reporteDAO.read();
+                FileInputStream file = new FileInputStream(new File(reporte.getRuta()));
 
                 Workbook workbook = new XSSFWorkbook(file);
                 int numHojas = workbook.getNumberOfSheets();
@@ -188,5 +194,5 @@ public class FCGenerador {
         }
 
     }
-    
+
 }

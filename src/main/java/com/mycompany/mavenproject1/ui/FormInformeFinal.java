@@ -11,8 +11,6 @@ import com.mycompany.mavenproject1.database.model.Cliente;
 import com.toedter.calendar.JDateChooser;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.JButton;
@@ -31,7 +29,7 @@ public class FormInformeFinal extends javax.swing.JPanel {
     private JDateChooser dateChooser2;
     private Cliente cliente;
 
-    public FormInformeFinal(String path, Cliente cliente, String tipo) {
+    public FormInformeFinal(Cliente cliente, String tipo) {
         initComponents();
 
         this.setBackground(Color.LIGHT_GRAY);
@@ -63,7 +61,7 @@ public class FormInformeFinal extends javax.swing.JPanel {
                 Runnable mRunnable = () -> {
                     Cargando c = new Cargando("Generando");
                     c.setVisible(true);
-                    InformeClientesUtils ifu = new InformeClientesUtils(path, FileUtils.saveDataOne("Guardar Reporte De Clientes"), cliente);
+                    InformeClientesUtils ifu = new InformeClientesUtils( FileUtils.saveDataOne("Guardar Reporte De Clientes"), cliente);
                     ifu.generarInforme(inicio, quitarHora(fin));
                     c.dispose();
                 };
@@ -78,7 +76,7 @@ public class FormInformeFinal extends javax.swing.JPanel {
                 Runnable mRunnable = () -> {
                     Cargando c = new Cargando("Generando");
                     c.setVisible(true);
-                    InformeInsumosUtils ifu = new InformeInsumosUtils(path, FileUtils.saveDataOne("Guardar Reporte De Materiales"), cliente);
+                    InformeInsumosUtils ifu = new InformeInsumosUtils( FileUtils.saveDataOne("Guardar Reporte De Materiales"), cliente);
                     ifu.generarInforme(inicio, quitarHora(fin));
                     c.dispose();
                 };

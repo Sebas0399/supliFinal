@@ -7,6 +7,7 @@ package com.mycompany.mavenproject1.tablas;
 import com.mycompany.mavenproject1.utils.HibernateUtil;
 import com.mycompany.mavenproject1.database.model.MaterialReporte;
 import com.mycompany.mavenproject1.database.DAO.MaterialReporteDAO;
+import com.mycompany.mavenproject1.database.DAO.ReporteDAO;
 import com.mycompany.mavenproject1.tablas.model.MPReporteTableModel;
 import com.mycompany.mavenproject1.tablas.model.RenderTable;
 import com.mycompany.mavenproject1.ui.FormMaterialReporte;
@@ -35,11 +36,11 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
      * Creates neigw form TodosMaterialReporte
      */
     List<String> codigos;
-    private Map<String, String> paths;
+    private ReporteDAO reporteDAO;
 
-    public TodosMaterialReporte(Map<String, String> path) {
+    public TodosMaterialReporte() {
         initComponents();
-        this.paths = path;
+        this.reporteDAO=new ReporteDAO(HibernateUtil.getSessionFactory());
         jTable1.setRowHeight(30);
         this.setBounds(0, 0, 800, 600);
         this.setBackground(Color.LIGHT_GRAY);

@@ -9,8 +9,11 @@ import com.mycompany.mavenproject1.utils.InsumosUtils;
 import com.mycompany.mavenproject1.utils.ValidarUtils;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.DAO.ClienteDAO;
+import com.mycompany.mavenproject1.database.DAO.ReporteDAO;
+import com.mycompany.mavenproject1.database.model.Reporte;
 import com.mycompany.mavenproject1.tablas.TodosMaterial;
 import com.mycompany.mavenproject1.tablas.TodosMaterialReporte;
+import com.mycompany.mavenproject1.utils.HibernateUtil;
 import java.awt.Color;
 import java.awt.Cursor;
 
@@ -28,6 +31,7 @@ public class EntradaPanel extends javax.swing.JPanel {
     //var pathInsumos;
     public static Map<String, String> paths;
     private Cliente cliente;
+    private ReporteDAO reporteDAO;
     //var pathListadoFacturas;
 
     /**
@@ -40,6 +44,7 @@ public class EntradaPanel extends javax.swing.JPanel {
         this.setBackground(Color.LIGHT_GRAY);
         paths = new HashMap<>();
         cliente = (Cliente) this.comboCliente.getSelectedItem();
+        reporteDAO=new ReporteDAO(HibernateUtil.getSessionFactory());
     }
 
     private void cargarClientes() {
@@ -206,6 +211,10 @@ public class EntradaPanel extends javax.swing.JPanel {
             if (validar.validar()) {
                 TodosMaterialReporte.regargarPanel();
                 TodosMaterialReporte.cargarDatos();
+                Reporte r=new Reporte();
+                r.setRuta(path);
+                reporteDAO.deleteAll();
+                reporteDAO.create(r);
                 JOptionPane.showMessageDialog(null, "Reporte de produccion cargado correctamente");
             } else {
                 JOptionPane.showMessageDialog(null, "Ocurrio un error");
@@ -231,9 +240,9 @@ public class EntradaPanel extends javax.swing.JPanel {
             InsumosUtils insumosUtils = new InsumosUtils(paths, (Cliente) comboCliente.getSelectedItem());
             insumosUtils.saveAllInsumos();
             TodosMaterial.cargarDatos();
-            if (paths.containsKey("RP")) {
+            Reporte reporte=reporteDAO.read();
+            if (reporte!=null) {
                 TodosMaterialReporte.regargarPanel();
-
             }
             JOptionPane.showMessageDialog(null, "Listado de insumos cargado correctamente");
 
@@ -247,13 +256,14 @@ public class EntradaPanel extends javax.swing.JPanel {
 
     private void reporteInsumosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reporteInsumosActionPerformed
         // TODO add your handling code here:
-        if (paths.get("RP") == null) {
+        Reporte reporte=reporteDAO.read();
+        if (reporte==null) {
             JOptionPane.showMessageDialog(null, "Cargue el reporte de produccion");
 
         } else {
             JDialog dialog = new JDialog();
             dialog.setTitle("Generar Reporte De Insumos");
-            dialog.getContentPane().add(new FormInformeFinal(paths.get("RP"), cliente, "insumos"));
+            dialog.getContentPane().add(new FormInformeFinal( cliente, "insumos"));
             dialog.setSize(400, 150);
             dialog.setModal(true);
             dialog.setVisible(true);
@@ -273,13 +283,14 @@ public class EntradaPanel extends javax.swing.JPanel {
 
     private void reporteClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reporteClienteActionPerformed
         // TODO add your handling code here:
-        if (this.paths.get("RP") == null) {
+        Reporte reporte=reporteDAO.read();
+        if (reporte == null) {
             JOptionPane.showMessageDialog(null, "Cargue el reporte de produccion");
 
         } else {
             JDialog dialog = new JDialog();
             dialog.setTitle("Generar Reporte De Cliente");
-            dialog.getContentPane().add(new FormInformeFinal(this.paths.get("RP"), cliente, "cliente"));
+            dialog.getContentPane().add(new FormInformeFinal( cliente, "cliente"));
             dialog.setSize(400, 150);
             dialog.setModal(true);
 

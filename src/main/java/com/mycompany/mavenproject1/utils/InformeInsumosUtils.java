@@ -11,6 +11,8 @@ import com.mycompany.mavenproject1.database.model.Material;
 import com.mycompany.mavenproject1.database.model.MaterialReporte;
 import com.mycompany.mavenproject1.database.DAO.MaterialDAO;
 import com.mycompany.mavenproject1.database.DAO.MaterialReporteDAO;
+import com.mycompany.mavenproject1.database.DAO.ReporteDAO;
+import com.mycompany.mavenproject1.database.model.Reporte;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -45,14 +47,14 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class InformeInsumosUtils {
 
-    private String reporteVentas;
     private String ruta;
     private Cliente cliente;
+    private ReporteDAO reporteDAO;
 
-    public InformeInsumosUtils(String reporteVentas, String ruta, Cliente cliente) {
-        this.reporteVentas = reporteVentas;
+    public InformeInsumosUtils( String ruta, Cliente cliente) {
         this.ruta = ruta;
         this.cliente = cliente;
+        this.reporteDAO=new ReporteDAO(HibernateUtil.getSessionFactory());
     }
 
     public List<Map<Integer, List<String>>> convertir(String path) {
@@ -104,7 +106,8 @@ public class InformeInsumosUtils {
     }
 
     public void generarInforme(Date inicio, Date fin) {
-        List<Map<Integer, List<String>>> listaFacturas = convertir(reporteVentas);
+        Reporte reporte=reporteDAO.read();
+        List<Map<Integer, List<String>>> listaFacturas = convertir(reporte.getRuta());
 
         Map<String, Double> cantidadesPorMaterial = new HashMap<>();
         Map<String, Integer> cantidadItemsPorMaterial = new HashMap<>();

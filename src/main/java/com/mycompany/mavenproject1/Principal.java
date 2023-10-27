@@ -30,7 +30,7 @@ public class Principal extends javax.swing.JFrame {
             jInternalFrame1.add(pan1);
             jInternalFrame2.add(pan2);
 
-            TodosMaterialReporte pan5 = new TodosMaterialReporte(pan1.getPaths());
+            TodosMaterialReporte pan5 = new TodosMaterialReporte();
             jInternalFrame3.add(pan5);
             TodosMaterial pan4 = new TodosMaterial();
             jInternalFrame4.add(pan4);
