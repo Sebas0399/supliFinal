@@ -260,11 +260,16 @@ public class InformeClientesUtils {
             }*/
         }
         System.out.println(listaFactura);
-        listaFactura.entrySet().stream()
-                // ... some other Stream processings
-                .forEach(e -> System.out.println(e.getKey() + ":" + e.getValue()));
+        for (Map.Entry<String, List<String>> x : listaFactura.entrySet()) {
+            Row r = sheet.createRow(rowNumber++);
+            int k = 0;
+            for (String j : x.getValue()) {
+                r.createCell(k++).setCellValue(j);
+            }
+        }
+        
 
-        /* String fileLocation = this.ruta + ".xls";
+         String fileLocation = this.ruta + ".xls";
         System.out.println(fileLocation);
         try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
             workbook.write(outputStream);
@@ -277,7 +282,7 @@ public class InformeClientesUtils {
             workbook.close();
         } catch (IOException ex) {
             Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
+        }
     }
 
     public String redondear(BigDecimal num) {
