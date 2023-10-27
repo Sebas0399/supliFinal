@@ -5,7 +5,7 @@
 package com.mycompany.mavenproject1.ui;
 
 import com.mycompany.mavenproject1.FCGenerador;
-import com.mycompany.mavenproject1.HibernateUtil;
+import com.mycompany.mavenproject1.utils.HibernateUtil;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.model.Material;
 import com.mycompany.mavenproject1.database.model.MaterialReporte;
@@ -13,6 +13,7 @@ import com.mycompany.mavenproject1.database.DAO.ClienteDAO;
 import com.mycompany.mavenproject1.database.DAO.MaterialDAO;
 import com.mycompany.mavenproject1.database.DAO.MaterialReporteDAO;
 import com.mycompany.mavenproject1.tablas.TodosMaterialReporte;
+import java.awt.Cursor;
 import java.awt.Window;
 import java.io.File;
 import java.io.FileInputStream;
@@ -89,15 +90,14 @@ public class FormMaterialReporte extends javax.swing.JPanel {
 
         this.btnGuardar.setText("Actualizar");
         materialReporte = mr.readByCodigo(codigo);
-       
-        Supplier<Stream<Material>>  itemSelected = ()->this.insumos.stream().filter(x -> x.getDescripcion().equals(materialReporte.getDescripcion()));
+
+        Supplier<Stream<Material>> itemSelected = () -> this.insumos.stream().filter(x -> x.getDescripcion().equals(materialReporte.getDescripcion()));
         if (itemSelected.get().findAny().isPresent()) {
             this.comboInsumos.setSelectedItem(itemSelected.get().findAny().get());
 
         }
         this.codigos.stream().forEach(x -> this.comboMaterial.addItem(x));
         this.comboMaterial.setSelectedItem(codigo);
-
     }
 
     private void cargarDatos() {

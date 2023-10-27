@@ -4,6 +4,7 @@
  */
 package com.mycompany.mavenproject1;
 
+import com.mycompany.mavenproject1.utils.FileUtils;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -135,7 +136,7 @@ public class FCGenerador {
     }
 
     public void cargarFacturas() {
-        this.savePath = FileUtils.saveData();
+        this.savePath = FileUtils.saveData("Guardar Factura");
         if (this.savePath != null) {
             try {
                 List<Map<Integer, List<String>>> archivoGeneral = new ArrayList<>();

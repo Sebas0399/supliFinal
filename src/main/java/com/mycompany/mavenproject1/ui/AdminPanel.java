@@ -4,7 +4,7 @@
  */
 package com.mycompany.mavenproject1.ui;
 
-import com.mycompany.mavenproject1.HibernateUtil;
+import com.mycompany.mavenproject1.utils.HibernateUtil;
 import com.mycompany.mavenproject1.database.DAO.MaterialDAO;
 import com.mycompany.mavenproject1.database.DAO.MaterialReporteDAO;
 import com.mycompany.mavenproject1.tablas.TodosMaterial;

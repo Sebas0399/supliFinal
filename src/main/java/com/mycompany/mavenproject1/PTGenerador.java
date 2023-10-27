@@ -4,6 +4,7 @@
  */
 package com.mycompany.mavenproject1;
 
+import com.mycompany.mavenproject1.utils.FileUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -156,7 +157,7 @@ public class PTGenerador {
     }
 
     public void cargarFacturas() {
-        this.savePath = FileUtils.saveData();
+        this.savePath = FileUtils.saveData("Guardar Producto Terminado");
         if(this.savePath!=null){
             try {
             List<Map<Integer, List<String>>> archivoGeneral = new ArrayList<>();

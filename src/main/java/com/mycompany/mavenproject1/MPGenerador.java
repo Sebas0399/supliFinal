@@ -8,6 +8,8 @@ package com.mycompany.mavenproject1;
  *
  * @author Sebas
  */
+import com.mycompany.mavenproject1.utils.FileUtils;
+import com.mycompany.mavenproject1.utils.HibernateUtil;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.DAO.MaterialDAO;
 import com.mycompany.mavenproject1.database.DAO.MaterialReporteDAO;
@@ -206,7 +208,7 @@ public class MPGenerador {
     }
 
     public void cargarFacturas() {
-        this.savePath = FileUtils.saveData();
+        this.savePath = FileUtils.saveData("Guardar Material De Produccion");
         if (this.savePath != null) {
             try {
 

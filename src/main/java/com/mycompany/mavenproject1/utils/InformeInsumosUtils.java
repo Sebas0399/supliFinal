@@ -2,8 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.mavenproject1;
+package com.mycompany.mavenproject1.utils;
 
+import com.mycompany.mavenproject1.FCGenerador;
+import com.mycompany.mavenproject1.utils.HibernateUtil;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.model.Material;
 import com.mycompany.mavenproject1.database.model.MaterialReporte;
@@ -20,10 +22,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -43,13 +43,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  *
  * @author Sebas
  */
-public class InformeClientesUtils {
+public class InformeInsumosUtils {
 
     private String reporteVentas;
     private String ruta;
     private Cliente cliente;
 
-    public InformeClientesUtils(String reporteVentas, String ruta, Cliente cliente) {
+    public InformeInsumosUtils(String reporteVentas, String ruta, Cliente cliente) {
         this.reporteVentas = reporteVentas;
         this.ruta = ruta;
         this.cliente = cliente;
@@ -87,7 +87,7 @@ public class InformeClientesUtils {
                             case FORMULA ->
                                 data.get(j).add(cell.getCellFormula() + "");
                             default ->
-                                data.get(j).add(" ");
+                                System.out.print("");
                         }
                     }
                     j++;
@@ -106,19 +106,13 @@ public class InformeClientesUtils {
     public void generarInforme(Date inicio, Date fin) {
         List<Map<Integer, List<String>>> listaFacturas = convertir(reporteVentas);
 
-        List<List<String>> lFinal = new ArrayList<>();
+        Map<String, Double> cantidadesPorMaterial = new HashMap<>();
+        Map<String, Integer> cantidadItemsPorMaterial = new HashMap<>();
+        Map<String, List<String>> cantidades = new HashMap<>();
 
         for (Map<Integer, List<String>> factura : listaFacturas) {
             var si = false;
             var filtro = false;
-            Map<String, List<String>> producto = new HashMap<>();
-            Map<String, Integer> facturaNro = new HashMap<>();
-
-            // factura.get(si);
-            //System.err.println(factura.get(0));
-            //---------------Cliente---------------//
-            System.err.println(factura.get(2));
-            var cliente = factura.get(2);
             for (int i = 0; i < factura.size(); i++) {
 
                 var elem = factura.get(i);
@@ -143,21 +137,25 @@ public class InformeClientesUtils {
                             Logger.getLogger(InformeInsumosUtils.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-
-                    if (elem.contains("Fecha Fabricación")) {
+                    if (elem.contains("Número DAU")) {
                         si = true;
                         i++;
                         elem = factura.get(i);
                     }
-
                     if (si && filtro) {
+                        if (elem.size() > 7) {
+                            System.out.println(elem);
+                            var descripcion = elem.get(2);
+                            var cantidad = Double.parseDouble(elem.get(3));
+                            if (cantidadesPorMaterial.containsKey(descripcion)) {
+                                double cantidadActual = cantidadesPorMaterial.get(descripcion);
+                                cantidadesPorMaterial.put(descripcion, cantidadActual + cantidad);
+                                cantidadItemsPorMaterial.put(descripcion, cantidadItemsPorMaterial.getOrDefault(descripcion, 0) + 1);
+                                cantidades.put(descripcion, List.of(String.valueOf(cantidadActual + cantidad), elem.get(1)));
+                            } else {
+                                cantidadesPorMaterial.put(descripcion, cantidad);
+                            }
 
-                        //System.err.println(elem);
-                        if (elem.contains("TOTAL")) {
-                            break;
-                        } else {
-                            facturaNro.put(factura.get(4).get(1), 0);
-                            producto.put(elem.get(2), List.of(cliente.get(0), elem.get(1), elem.get(3), Constantes.SUBPARTIDA_FC, "U", extraerEnteros(elem.get(10))));
                         }
 
                     }
@@ -165,40 +163,21 @@ public class InformeClientesUtils {
                 }
 
             }
-            //System.out.println(producto);
-            for (Map.Entry<String, List<String>> entry : producto.entrySet()) {
-                String textoMaterial = entry.getKey();
-                List<String> items = entry.getValue();
-                List<String> item = new ArrayList<>();
-                for (int i = 0; i < items.size(); i++) {
-
-                    if (i == 4) {
-                        item.add(textoMaterial);
-                        item.add(items.get(i));
-                    } else {
-                        item.add(items.get(i));
-
-                    }
-                }
-
-                lFinal.add(item);
-
-                // int cantidadItems = cantidadItemsPorMaterial.getOrDefault(textoMaterial, 0);
-            }
-            System.out.println(facturaNro.size());
 
         }
 
-        generarExcel(lFinal);
+        generarExcel(cantidades, cantidadItemsPorMaterial);
     }
 
-    private void generarExcel(List<List<String>> lFinal) {
+    private void generarExcel(Map<String, List<String>> cantidades, Map<String, Integer> cantidadItemsPorMaterial) {
+        MaterialDAO materialDAO = new MaterialDAO();
+        MaterialReporteDAO materialReporteDAO = new MaterialReporteDAO(HibernateUtil.getSessionFactory());
 
         Workbook workbook = new HSSFWorkbook();
         Sheet sheet = workbook.createSheet();
-        //List<List<String>> lFinal = new ArrayList<>();
+        List<List<String>> lFinal = new ArrayList<>();
         List<List<String>> cabeceras = List.of(
-                List.of("CLIENTE", "No. FACTURA", "FECHA FACTURA", "SUBPARTIDA ARANCELARIA P. TERMINADO", "DESCRIPCIÓN P. TERMINADO", "TIPO UNIDAD", "CANTIDAD ELABORADA")
+                List.of("Empresa", "Código", "Supbartida", "Descripción", "Tipo Unidad", "Sald de insumos por regularizar", "Numero de items", "Total Consumo", "Saldo Utilizado en el Periodo", "Saldo Actual por Compensar")
         );
 
         int rowNumber = 0;
@@ -208,7 +187,28 @@ public class InformeClientesUtils {
                 header.createCell(i).setCellValue(cabecera.get(i));
             }
         }
+        for (Map.Entry<String, List<String>> entry : cantidades.entrySet()) {
+            String textoMaterial = entry.getKey();
+            int cantidadItems = cantidadItemsPorMaterial.getOrDefault(textoMaterial, 0);
+            MaterialReporte mr = materialReporteDAO.readByCodigo(String.valueOf(Double.valueOf(entry.getValue().get(1)).intValue()));
+            if (mr != null) {
+                Material m = materialDAO.readByCodigo(mr.getCodigoInsumo(), cliente.getRuc());
+                if (m != null) {
+                    var saldoCompensar = m.getSaldoInsumo().subtract(new BigDecimal(cantidadItems).multiply(new BigDecimal(entry.getValue().get(0))));
+                    var saldoUsado = m.getSaldoInsumo().subtract(saldoCompensar);
+                    lFinal.add(List.of(m.getCliente().toString(), m.getCodigo(), m.getSubpartida(), textoMaterial, m.getTipoUnidad(), redondear(m.getSaldoInsumo()), String.valueOf(cantidadItems), redondear(new BigDecimal(entry.getValue().get(0))), redondear(saldoUsado), redondear(saldoCompensar)));
+                } else {
+                    JOptionPane.showMessageDialog(null, "No existe el insumo para el material:"+ mr.getCodigo());
+                    return;
 
+                }
+
+            } else {
+                JOptionPane.showMessageDialog(null, "No existe el material :" + String.valueOf(Double.valueOf(entry.getValue().get(1)).intValue()));
+                return;
+            }
+
+        }
         for (List<String> x : lFinal) {
             Row r = sheet.createRow(rowNumber++);
             int k = 0;
@@ -218,7 +218,6 @@ public class InformeClientesUtils {
         }
 
         String fileLocation = this.ruta + ".xls";
-        System.out.println(fileLocation);
         try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
             workbook.write(outputStream);
             JOptionPane.showMessageDialog(null, "Informe Final Generado");
@@ -235,11 +234,5 @@ public class InformeClientesUtils {
 
     public String redondear(BigDecimal num) {
         return num.setScale(3, RoundingMode.HALF_UP).toString().replace(".", ",");
-    }
-
-    public String extraerEnteros(String num) {
-        double numeroComoDouble = Double.parseDouble(num);
-        int parteEntera = (int) numeroComoDouble;
-        return String.valueOf(parteEntera);
     }
 }

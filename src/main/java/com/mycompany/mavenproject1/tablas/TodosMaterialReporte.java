@@ -4,34 +4,22 @@
  */
 package com.mycompany.mavenproject1.tablas;
 
-import com.mycompany.mavenproject1.Constantes;
-import com.mycompany.mavenproject1.FCGenerador;
-import com.mycompany.mavenproject1.FileUtils;
-import com.mycompany.mavenproject1.HibernateUtil;
-import com.mycompany.mavenproject1.StringUtils;
+import com.mycompany.mavenproject1.utils.HibernateUtil;
 import com.mycompany.mavenproject1.database.model.MaterialReporte;
 import com.mycompany.mavenproject1.database.DAO.MaterialReporteDAO;
 import com.mycompany.mavenproject1.tablas.model.MPReporteTableModel;
 import com.mycompany.mavenproject1.tablas.model.RenderTable;
 import com.mycompany.mavenproject1.ui.FormMaterialReporte;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import static java.awt.image.ImageObserver.WIDTH;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
@@ -134,8 +122,11 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
         dialog.setTitle("Insertar");
 
         dialog.getContentPane().add(fr);
-        dialog.setSize(500, 400);
+        dialog.setSize(900, 150);
+        dialog.setModal(true);
+        dialog.setResizable(false);
         dialog.setVisible(true);
+
         dialog.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -176,16 +167,19 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
             var option = JOptionPane.showConfirmDialog(null, "Se va a eliminar el material");
             if (option == JOptionPane.YES_OPTION) {
 
-                String codigo = 
-                        jTable1.getModel().getValueAt(row, 0).toString();
+                String codigo
+                        = jTable1.getModel().getValueAt(row, 0).toString();
                 System.out.println(mr.delete(codigo));
                 cargarDatos();
             }
 
-        } else {
+        } else if (col == 4) {
+            setCursor(new Cursor(Cursor.WAIT_CURSOR));
+
             FormMaterialReporte fr = new FormMaterialReporte(jTable1.getModel().getValueAt(row, 0).toString());
             jPanel1.removeAll();
             jPanel1.add(fr);
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
         }
 

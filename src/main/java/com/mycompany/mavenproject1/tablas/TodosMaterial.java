@@ -44,9 +44,9 @@ public class TodosMaterial extends javax.swing.JPanel {
             cargarDatos();
         });
     }
-    
+
     public static void cargarDatos() {
-        
+
         JButton mod = new JButton();
         mod.setText("Modificar");
         JButton delete = new JButton();
@@ -56,24 +56,24 @@ public class TodosMaterial extends javax.swing.JPanel {
         Object[][] datos = new Object[materiales.size()][WIDTH];
         for (int i = 0; i < materiales.size(); i++) {
             Material materiaPrima = materiales.get(i);
-            
+
             var box1 = new JCheckBox();
             if (materiaPrima.getCalculaDesperdicio() != null) {
                 box1.setSelected(materiaPrima.getCalculaDesperdicio());
-                
+
             } else {
                 box1.setSelected(false);
-                
+
             }
             var box2 = new JCheckBox();
             if (materiaPrima.getAplicaFormula() != null) {
                 box2.setSelected(materiaPrima.getAplicaFormula());
-                
+
             } else {
                 box2.setSelected(false);
-                
+
             }
-            
+
             datos[i] = new Object[]{
                 materiaPrima.getCliente(),
                 materiaPrima.getCodigo(),
@@ -90,14 +90,14 @@ public class TodosMaterial extends javax.swing.JPanel {
                 delete
             };
         }
-        
+
         MPTableModel modelo = new MPTableModel(datos);
         jTable3.setModel(modelo);
         TableRowSorter<TableModel> order = new TableRowSorter<>(modelo);
         jTable3.setRowSorter(order);
         jTable3.setRowHeight(30);
         jTable3.setDefaultRenderer(Object.class, new RenderTable());
-        
+
     }
 
     /**
@@ -197,21 +197,23 @@ public class TodosMaterial extends javax.swing.JPanel {
         FormMaterial fr = new FormMaterial();
         JDialog dialog = new JDialog();
         dialog.setTitle("Insertar");
-        
+
         dialog.getContentPane().add(fr);
         dialog.setSize(800, 600);
+        dialog.setModal(true);
+
         dialog.setVisible(true);
         dialog.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 cargarDatos();
             }
-            
+
             @Override
             public void windowClosed(WindowEvent e) {
                 cargarDatos();
             }
-            
+
         });
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -220,38 +222,40 @@ public class TodosMaterial extends javax.swing.JPanel {
         var col = this.jTable3.getSelectedColumn();
         var row = this.jTable3.getSelectedRow();
         MaterialDAO mr = new MaterialDAO();
-        
+
         if (col == 12) {
-            
+
             var option = JOptionPane.showConfirmDialog(null, "Se va a eliminar el material");
             if (option == JOptionPane.YES_OPTION) {
-                
+
                 String codigo = this.jTable3.getModel().getValueAt(row, 1).toString();
                 Cliente clienteTabla = (Cliente) this.jTable3.getModel().getValueAt(row, 0);
                 mr.delete(codigo, clienteTabla.getRuc());
                 cargarDatos();
             }
-            
+
         } else if (col == 11) {
             Cliente cliente = (Cliente) this.jTable3.getValueAt(row, 0);
             FormMaterial fr = new FormMaterial(this.jTable3.getValueAt(row, 1).toString(), cliente);
             JDialog dialog = new JDialog();
             dialog.setTitle("Actualizar");
-            
+
             dialog.getContentPane().add(fr);
             dialog.setSize(800, 600);
+            dialog.setModal(true);
             dialog.setVisible(true);
+
             dialog.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosing(WindowEvent e) {
                     cargarDatos();
                 }
-                
+
                 @Override
                 public void windowClosed(WindowEvent e) {
                     cargarDatos();
                 }
-                
+
             });
         }
     }//GEN-LAST:event_jTable3MouseClicked
@@ -266,12 +270,12 @@ public class TodosMaterial extends javax.swing.JPanel {
 
     private void jScrollPane3KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jScrollPane3KeyReleased
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_jScrollPane3KeyReleased
 
     private void jScrollPane3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jScrollPane3MouseReleased
         // TODO add your handling code here:
-         if (evt.isPopupTrigger()) {
+        if (evt.isPopupTrigger()) {
             this.jPopupMenu1.show(evt.getComponent(), evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_jScrollPane3MouseReleased

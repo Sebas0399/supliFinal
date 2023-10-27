@@ -4,14 +4,15 @@
  */
 package com.mycompany.mavenproject1.ui;
 
-import com.mycompany.mavenproject1.FileUtils;
-import com.mycompany.mavenproject1.InsumosUtils;
-import com.mycompany.mavenproject1.ValidarUtils;
+import com.mycompany.mavenproject1.utils.FileUtils;
+import com.mycompany.mavenproject1.utils.InsumosUtils;
+import com.mycompany.mavenproject1.utils.ValidarUtils;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.DAO.ClienteDAO;
 import com.mycompany.mavenproject1.tablas.TodosMaterial;
 import com.mycompany.mavenproject1.tablas.TodosMaterialReporte;
 import java.awt.Color;
+import java.awt.Cursor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -195,15 +196,24 @@ public class EntradaPanel extends javax.swing.JPanel {
 
     private void cargarReporteProduccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cargarReporteProduccionActionPerformed
         // TODO add your handling code here:
-        var path = FileUtils.cargarData();
+        var path = FileUtils.cargarData("Cargar Reporte De Produccion");
         if (path != null) {
-            
-            JOptionPane.showMessageDialog(null, "Reporte de produccion cargado correctamente");
+            setCursor(new Cursor(Cursor.WAIT_CURSOR));
+
             getPaths().put("RP", path);
-            ValidarUtils validar=new ValidarUtils(path);
-            validar.validar();
-            TodosMaterialReporte.regargarPanel();
-            TodosMaterialReporte.cargarDatos();
+            //Validar reporte de produccion//
+            ValidarUtils validar = new ValidarUtils(path);
+            if (validar.validar()) {
+                TodosMaterialReporte.regargarPanel();
+                TodosMaterialReporte.cargarDatos();
+                JOptionPane.showMessageDialog(null, "Reporte de produccion cargado correctamente");
+            } else {
+                JOptionPane.showMessageDialog(null, "Ocurrio un error");
+
+            }
+            //
+
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
         } else {
             JOptionPane.showMessageDialog(null, "Ocurrio un error");
@@ -213,32 +223,39 @@ public class EntradaPanel extends javax.swing.JPanel {
 
     private void cargarInsumosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cargarInsumosActionPerformed
         // TODO add your handling code here:
-        var path = FileUtils.cargarData(true);
+        var path = FileUtils.cargarData(true, "Cargar Insumos");
         if (path != null) {
+            setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
-            JOptionPane.showMessageDialog(null, "Listado de insumos cargado correctamente");
             getPaths().put("IN", path);
-            InsumosUtils insumosUtils = new InsumosUtils(this.paths, (Cliente) this.comboCliente.getSelectedItem());
+            InsumosUtils insumosUtils = new InsumosUtils(paths, (Cliente) comboCliente.getSelectedItem());
             insumosUtils.saveAllInsumos();
             TodosMaterial.cargarDatos();
-            TodosMaterialReporte.regargarPanel();
+            if (paths.containsKey("RP")) {
+                TodosMaterialReporte.regargarPanel();
+
+            }
+            JOptionPane.showMessageDialog(null, "Listado de insumos cargado correctamente");
+
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
         } else {
-            JOptionPane.showMessageDialog(null, "Ocurrio un error");
+            ///
         }
 
     }//GEN-LAST:event_cargarInsumosActionPerformed
 
     private void reporteInsumosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reporteInsumosActionPerformed
         // TODO add your handling code here:
-        if (this.paths.get("RP") == null) {
+        if (paths.get("RP") == null) {
             JOptionPane.showMessageDialog(null, "Cargue el reporte de produccion");
 
         } else {
             JDialog dialog = new JDialog();
-            dialog.setTitle("Generar");
-            dialog.getContentPane().add(new FormInformeFinal(this.paths.get("RP"), cliente,"insumos"));
+            dialog.setTitle("Generar Reporte De Insumos");
+            dialog.getContentPane().add(new FormInformeFinal(paths.get("RP"), cliente, "insumos"));
             dialog.setSize(400, 150);
+            dialog.setModal(true);
             dialog.setVisible(true);
         }
 
@@ -261,9 +278,11 @@ public class EntradaPanel extends javax.swing.JPanel {
 
         } else {
             JDialog dialog = new JDialog();
-            dialog.setTitle("Generar");
-            dialog.getContentPane().add(new FormInformeFinal(this.paths.get("RP"), cliente,"cliente"));
+            dialog.setTitle("Generar Reporte De Cliente");
+            dialog.getContentPane().add(new FormInformeFinal(this.paths.get("RP"), cliente, "cliente"));
             dialog.setSize(400, 150);
+            dialog.setModal(true);
+
             dialog.setVisible(true);
         }
     }//GEN-LAST:event_reporteClienteActionPerformed

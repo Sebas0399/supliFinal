@@ -4,9 +4,9 @@
  */
 package com.mycompany.mavenproject1.ui;
 
-import com.mycompany.mavenproject1.FileUtils;
-import com.mycompany.mavenproject1.InformeClientesUtils;
-import com.mycompany.mavenproject1.InformeInsumosUtils;
+import com.mycompany.mavenproject1.utils.FileUtils;
+import com.mycompany.mavenproject1.utils.InformeClientesUtils;
+import com.mycompany.mavenproject1.utils.InformeInsumosUtils;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.toedter.calendar.JDateChooser;
 import java.awt.Color;
@@ -63,7 +63,7 @@ public class FormInformeFinal extends javax.swing.JPanel {
                 Runnable mRunnable = () -> {
                     Cargando c = new Cargando("Generando");
                     c.setVisible(true);
-                    InformeClientesUtils ifu = new InformeClientesUtils(path, FileUtils.saveDataOne(), cliente);
+                    InformeClientesUtils ifu = new InformeClientesUtils(path, FileUtils.saveDataOne("Guardar Reporte De Clientes"), cliente);
                     ifu.generarInforme(inicio, quitarHora(fin));
                     c.dispose();
                 };
@@ -78,7 +78,7 @@ public class FormInformeFinal extends javax.swing.JPanel {
                 Runnable mRunnable = () -> {
                     Cargando c = new Cargando("Generando");
                     c.setVisible(true);
-                    InformeInsumosUtils ifu = new InformeInsumosUtils(path, FileUtils.saveDataOne(), cliente);
+                    InformeInsumosUtils ifu = new InformeInsumosUtils(path, FileUtils.saveDataOne("Guardar Reporte De Materiales"), cliente);
                     ifu.generarInforme(inicio, quitarHora(fin));
                     c.dispose();
                 };
