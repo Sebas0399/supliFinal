@@ -6,9 +6,13 @@ package com.mycompany.mavenproject1.utils;
 
 import com.mycompany.mavenproject1.Constantes;
 import com.mycompany.mavenproject1.FCGenerador;
+import com.mycompany.mavenproject1.StringUtils;
+import com.mycompany.mavenproject1.database.DAO.MaterialDAO;
+import com.mycompany.mavenproject1.database.DAO.MaterialReporteDAO;
 import com.mycompany.mavenproject1.database.DAO.ReporteDAO;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.model.Reporte;
+import java.awt.Window;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,13 +23,16 @@ import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import static org.apache.poi.ss.usermodel.CellType.BOOLEAN;
@@ -37,6 +44,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.engine.spi.ExecutableList;
 
 /**
  *
@@ -47,11 +55,13 @@ public class InformeClientesUtils {
     private String ruta;
     private Cliente cliente;
     private ReporteDAO reporteDAO;
+    private MaterialReporteDAO materialReporteDAO;
 
     public InformeClientesUtils(String ruta, Cliente cliente) {
         this.ruta = ruta;
         this.cliente = cliente;
         this.reporteDAO = new ReporteDAO(HibernateUtil.getSessionFactory());
+        this.materialReporteDAO = new MaterialReporteDAO(HibernateUtil.getSessionFactory());
 
     }
 
@@ -103,13 +113,52 @@ public class InformeClientesUtils {
 
     }
 
+    private Boolean verificarFactura(Map<Integer, List<String>> factura) {
+
+        List<List<String>> valore = new ArrayList<>();
+
+        var si = false;
+        var suma = 0.0;
+        Map<String, Double> codigoSumaMap = new HashMap<>();
+
+        for (int i = 0; i <= factura.size() + 1; i++) {
+            var elem = factura.get(i);
+
+            if (elem != null) {
+                if (elem.contains("Número DAU")) {
+                    si = true;
+                    i++;
+                    elem = factura.get(i);
+                }
+                if (si&&elem!=null) {
+
+                    if (elem.size() > 7) {
+                        var codigo = String.valueOf((int) Double.parseDouble(elem.get(1)));
+                        var materialReporte = this.materialReporteDAO.readByCodigo(codigo);
+                        if (materialReporte != null) {
+                            var sumaActual = codigoSumaMap.getOrDefault(codigo, 0.0);
+                            codigoSumaMap.put(codigo, sumaActual + Double.valueOf(elem.get(3)));
+
+                        }
+
+                        suma = suma + Double.parseDouble(elem.get(3));
+                    }
+
+                }
+            }
+        }
+        return suma != 0; // JOptionPane.showMessageDialog(null, "La factura " + factura.get(4).get(1) + "no tiene materiales");
+        // contadorFila++;
+    }
+
     public void generarInforme(Date inicio, Date fin) {
-        Reporte reporte=reporteDAO.read();
+        Reporte reporte = reporteDAO.read();
         List<Map<Integer, List<String>>> listaFacturas = convertir(reporte.getRuta());
 
         List<List<String>> lFinal = new ArrayList<>();
 
         for (Map<Integer, List<String>> factura : listaFacturas) {
+
             var si = false;
             var filtro = false;
             Map<String, List<String>> producto = new HashMap<>();
@@ -150,10 +199,12 @@ public class InformeClientesUtils {
 
                         //System.err.println(elem);
                         if (elem.contains("TOTAL")) {
-                            break;
-                        } else {
                             facturaNro.put(factura.get(4).get(1), 0);
-                            producto.put(elem.get(2), List.of(cliente.get(0), elem.get(1), elem.get(3), Constantes.SUBPARTIDA_FC, "U", extraerEnteros(elem.get(10))));
+                            var elemAux = factura.get(i - 1);
+                            var contieneElementos = verificarFactura(factura);
+                            var contieneElementosAux = contieneElementos ? "" : "No contiene";
+                            producto.put(elemAux.get(2), List.of(cliente.get(0), elemAux.get(1), elemAux.get(3), Constantes.SUBPARTIDA_FC, "U", extraerEnteros(elem.get(2)), contieneElementosAux));
+                            break;
                         }
 
                     }
@@ -187,46 +238,7 @@ public class InformeClientesUtils {
         generarExcelFinal(lFinal);
     }
 
-    private void generarExcel(List<List<String>> lFinal) {
-
-        Workbook workbook = new HSSFWorkbook();
-        Sheet sheet = workbook.createSheet();
-        //List<List<String>> lFinal = new ArrayList<>();
-        List<List<String>> cabeceras = List.of(
-                List.of("CLIENTE", "No. FACTURA", "FECHA FACTURA", "SUBPARTIDA ARANCELARIA P. TERMINADO", "DESCRIPCIÓN P. TERMINADO", "TIPO UNIDAD", "CANTIDAD ELABORADA")
-        );
-
-        int rowNumber = 0;
-        for (List<String> cabecera : cabeceras) {
-            Row header = sheet.createRow(rowNumber++);
-            for (int i = 0; i < cabecera.size(); i++) {
-                header.createCell(i).setCellValue(cabecera.get(i));
-            }
-        }
-
-        for (List<String> x : lFinal) {
-            Row r = sheet.createRow(rowNumber++);
-            int k = 0;
-            for (String j : x) {
-                r.createCell(k++).setCellValue(j);
-            }
-        }
-
-        String fileLocation = this.ruta + ".xls";
-        System.out.println(fileLocation);
-        try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
-            workbook.write(outputStream);
-            JOptionPane.showMessageDialog(null, "Informe Final Generado");
-        } catch (IOException ex) {
-            Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        try {
-            workbook.close();
-        } catch (IOException ex) {
-            Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+    
 
     private void generarExcelFinal(List<List<String>> lFinal) {
         Workbook workbook = new HSSFWorkbook();
@@ -234,7 +246,7 @@ public class InformeClientesUtils {
         Map<String, List<String>> listaFactura = new HashMap<>();
         //List<List<String>> lFinal = new ArrayList<>();
         List<List<String>> cabeceras = List.of(
-                List.of("CLIENTE", "No. FACTURA", "FECHA FACTURA", "SUBPARTIDA ARANCELARIA P. TERMINADO", "DESCRIPCIÓN P. TERMINADO", "TIPO UNIDAD", "CANTIDAD ELABORADA")
+                List.of("CLIENTE", "No. FACTURA", "FECHA FACTURA", "SUBPARTIDA ARANCELARIA P. TERMINADO", "DESCRIPCIÓN P. TERMINADO", "TIPO UNIDAD", "CANTIDAD ELABORADA","CONTIENE MATERIAL")
         );
 
         int rowNumber = 0;
@@ -250,9 +262,9 @@ public class InformeClientesUtils {
             if (listaFactura.get(x.get(1)) != null) {
                 Integer sumaActual = Integer.valueOf(listaFactura.get(x.get(1)).get(6)); // Cambiado a índice 5 para obtener el sexto elemento (x.get(5)).
                 Integer nuevaSuma = sumaActual + Integer.valueOf(x.get(6));
-                listaFactura.put(x.get(1), List.of(x.get(0), x.get(1), x.get(2), x.get(3), x.get(4), x.get(5), nuevaSuma.toString())); // Convertido nuevaSuma a String antes de ponerlo en la lista.
+                listaFactura.put(x.get(1), List.of(x.get(0), x.get(1), x.get(2), x.get(3), x.get(4), x.get(5), nuevaSuma.toString(), x.get(6))); // Convertido nuevaSuma a String antes de ponerlo en la lista.
             } else {
-                listaFactura.put(x.get(1), List.of(x.get(0), x.get(1), x.get(2), x.get(3), x.get(4), x.get(5), x.get(6)));
+                listaFactura.put(x.get(1), List.of(x.get(0), x.get(1), x.get(2), x.get(3), x.get(4), x.get(5), x.get(6), x.get(7)));
             }
 
             //listaFactura.put(x.get(1), x);
@@ -262,8 +274,13 @@ public class InformeClientesUtils {
                 r.createCell(k++).setCellValue(j);
             }*/
         }
-        System.out.println(listaFactura);
-        for (Map.Entry<String, List<String>> x : listaFactura.entrySet()) {
+        var listaOrdenada=new ArrayList<>(listaFactura.entrySet());
+        listaOrdenada.sort(Comparator.comparing(entry->entry.getValue().get(0)));
+        Map<String,List<String>> listaFinalOrdenada=new LinkedHashMap<>();
+        for(Map.Entry<String,List<String>> entry:listaOrdenada){
+            listaFinalOrdenada.put(entry.getKey(), entry.getValue());
+        }
+        for (Map.Entry<String, List<String>> x : listaFinalOrdenada.entrySet()) {
             Row r = sheet.createRow(rowNumber++);
             int k = 0;
             for (String j : x.getValue()) {
@@ -272,9 +289,10 @@ public class InformeClientesUtils {
         }
 
         String fileLocation = this.ruta + ".xls";
-        System.out.println(fileLocation);
         try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
+      
             workbook.write(outputStream);
+            
             JOptionPane.showMessageDialog(null, "Informe Final Generado");
         } catch (IOException ex) {
             Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);

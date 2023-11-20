@@ -145,9 +145,8 @@ public class InformeInsumosUtils {
                         i++;
                         elem = factura.get(i);
                     }
-                    if (si && filtro) {
+                    if ((si && filtro)&&elem!=null) {
                         if (elem.size() > 7) {
-                            System.out.println(elem);
                             var descripcion = elem.get(2);
                             var cantidad = Double.parseDouble(elem.get(3));
                             if (cantidadesPorMaterial.containsKey(descripcion)) {

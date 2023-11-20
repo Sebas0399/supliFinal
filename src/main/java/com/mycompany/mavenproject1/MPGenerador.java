@@ -99,7 +99,7 @@ public class MPGenerador {
                             i++;
                             elem = factura.get(i);
                         }
-                        if (si) {
+                        if (si&&elem!=null) {
 
                             if (elem.size() > 7) {
                                 var codigo = String.valueOf((int) Double.parseDouble(elem.get(1)));

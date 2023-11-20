@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -230,6 +231,7 @@ public class TodosMaterial extends javax.swing.JPanel {
 
                 String codigo = this.jTable3.getModel().getValueAt(row, 1).toString();
                 Cliente clienteTabla = (Cliente) this.jTable3.getModel().getValueAt(row, 0);
+                
                 mr.delete(codigo, clienteTabla.getRuc());
                 cargarDatos();
             }
@@ -244,8 +246,15 @@ public class TodosMaterial extends javax.swing.JPanel {
             dialog.setSize(800, 600);
             dialog.setModal(true);
             dialog.setVisible(true);
+           
 
             dialog.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowDeactivated(WindowEvent e) {
+                    cargarDatos();
+                }
+               
+                
                 @Override
                 public void windowClosing(WindowEvent e) {
                     cargarDatos();
@@ -255,6 +264,7 @@ public class TodosMaterial extends javax.swing.JPanel {
                 public void windowClosed(WindowEvent e) {
                     cargarDatos();
                 }
+                
 
             });
         }

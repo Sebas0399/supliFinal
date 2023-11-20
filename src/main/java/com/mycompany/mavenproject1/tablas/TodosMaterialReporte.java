@@ -140,9 +140,11 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
             }
 
             @Override
-            public void windowStateChanged(WindowEvent e) {
+            public void windowDeactivated(WindowEvent e) {
                 cargarDatos();
             }
+
+          
 
         });
 

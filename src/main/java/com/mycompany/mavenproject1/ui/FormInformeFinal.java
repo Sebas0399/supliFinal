@@ -10,11 +10,13 @@ import com.mycompany.mavenproject1.utils.InformeInsumosUtils;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.toedter.calendar.JDateChooser;
 import java.awt.Color;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -61,12 +63,14 @@ public class FormInformeFinal extends javax.swing.JPanel {
                 Runnable mRunnable = () -> {
                     Cargando c = new Cargando("Generando");
                     c.setVisible(true);
-                    InformeClientesUtils ifu = new InformeClientesUtils( FileUtils.saveDataOne("Guardar Reporte De Clientes"), cliente);
+                    InformeClientesUtils ifu = new InformeClientesUtils(FileUtils.saveDataOne("Guardar Reporte De Clientes"), cliente);
                     ifu.generarInforme(inicio, quitarHora(fin));
                     c.dispose();
                 };
                 Thread miHilo = new Thread(mRunnable);
                 miHilo.start();
+                Window window = SwingUtilities.getWindowAncestor(this);
+                window.dispose();
             });
         } else {
             filterButton.addActionListener((ActionEvent e) -> {
@@ -76,12 +80,14 @@ public class FormInformeFinal extends javax.swing.JPanel {
                 Runnable mRunnable = () -> {
                     Cargando c = new Cargando("Generando");
                     c.setVisible(true);
-                    InformeInsumosUtils ifu = new InformeInsumosUtils( FileUtils.saveDataOne("Guardar Reporte De Materiales"), cliente);
+                    InformeInsumosUtils ifu = new InformeInsumosUtils(FileUtils.saveDataOne("Guardar Reporte De Materiales"), cliente);
                     ifu.generarInforme(inicio, quitarHora(fin));
                     c.dispose();
                 };
                 Thread miHilo = new Thread(mRunnable);
                 miHilo.start();
+                Window window = SwingUtilities.getWindowAncestor(this);
+                window.dispose();
             });
         }
     }
