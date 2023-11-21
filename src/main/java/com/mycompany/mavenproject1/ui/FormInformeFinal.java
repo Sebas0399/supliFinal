@@ -4,6 +4,7 @@
  */
 package com.mycompany.mavenproject1.ui;
 
+import com.mycompany.mavenproject1.FCGenerador;
 import com.mycompany.mavenproject1.utils.FileUtils;
 import com.mycompany.mavenproject1.utils.InformeClientesUtils;
 import com.mycompany.mavenproject1.utils.InformeInsumosUtils;
@@ -72,6 +73,24 @@ public class FormInformeFinal extends javax.swing.JPanel {
                 Window window = SwingUtilities.getWindowAncestor(this);
                 window.dispose();
             });
+
+        } else if (tipo.equals("factura")) {
+            filterButton.addActionListener(((ActionEvent e) -> {
+                Date inicio = dateChooser.getDate();
+
+                Date fin = dateChooser2.getDate();
+                Runnable mRunnable = () -> {
+                    Cargando c = new Cargando("Generando");
+                    c.setVisible(true);
+                    FCGenerador ifu = new FCGenerador(cliente);
+                    ifu.cargarFacturas(inicio, quitarHora(fin));
+                    c.dispose();
+                };
+                Thread miHilo = new Thread(mRunnable);
+                miHilo.start();
+                Window window = SwingUtilities.getWindowAncestor(this);
+                window.dispose();
+            }));
         } else {
             filterButton.addActionListener((ActionEvent e) -> {
                 Date inicio = dateChooser.getDate();

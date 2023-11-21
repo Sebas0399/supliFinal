@@ -13,6 +13,7 @@ import com.mycompany.mavenproject1.database.DAO.ReporteDAO;
 import com.mycompany.mavenproject1.utils.HibernateUtil;
 import java.awt.Color;
 import java.util.Map;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 /**
@@ -33,7 +34,7 @@ public class GeneradorPanel extends javax.swing.JPanel {
         initComponents();
         cargarClientes();
         this.setBackground(Color.LIGHT_GRAY);
-        this.reporteDAO=new ReporteDAO(HibernateUtil.getSessionFactory());
+        this.reporteDAO = new ReporteDAO(HibernateUtil.getSessionFactory());
         this.cliente = (Cliente) comboCliente.getSelectedItem();
     }
 
@@ -141,9 +142,12 @@ public class GeneradorPanel extends javax.swing.JPanel {
             Runnable mRunnable = () -> {
                 Cargando c = new Cargando("Generando");
                 c.setVisible(true);
-
-                FCGenerador generator = new FCGenerador(cliente);
-                generator.cargarFacturas();
+                JDialog dialog = new JDialog();
+                dialog.setTitle("Generar Reporte De Insumos");
+                dialog.getContentPane().add(new FormInformeFinal(cliente, "factura"));
+                dialog.setSize(400, 150);
+                dialog.setModal(true);
+                dialog.setVisible(true);
                 c.dispose();
 
             };
@@ -156,7 +160,7 @@ public class GeneradorPanel extends javax.swing.JPanel {
 
     private void generarProductoTerminadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarProductoTerminadoActionPerformed
         // TODO add your handling code here:
-        if (reporteDAO.read() == null ) {
+        if (reporteDAO.read() == null) {
             JOptionPane.showMessageDialog(null, "Ingrese el reporte de produccion");
 
         } else {
@@ -188,7 +192,7 @@ public class GeneradorPanel extends javax.swing.JPanel {
             Runnable mRunnable = () -> {
                 Cargando c = new Cargando("Generando");
                 c.setVisible(true);
-                MPGenerador generator = new MPGenerador( cliente);
+                MPGenerador generator = new MPGenerador(cliente);
                 generator.cargarFacturas();
                 c.dispose();
 

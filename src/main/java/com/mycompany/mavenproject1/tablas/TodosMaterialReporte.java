@@ -152,7 +152,6 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
     }//GEN-LAST:event_btnNuevoActionPerformed
     public static void regargarPanel() {
         jPanel1.removeAll();
-
         jPanel1.add(new FormMaterialReporte());
     }
     private void jTable1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTable1KeyPressed

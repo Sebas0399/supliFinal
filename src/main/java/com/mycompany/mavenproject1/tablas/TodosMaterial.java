@@ -96,6 +96,7 @@ public class TodosMaterial extends javax.swing.JPanel {
         jTable3.setModel(modelo);
         TableRowSorter<TableModel> order = new TableRowSorter<>(modelo);
         jTable3.setRowSorter(order);
+
         jTable3.setRowHeight(30);
         jTable3.setDefaultRenderer(Object.class, new RenderTable());
 
@@ -220,18 +221,21 @@ public class TodosMaterial extends javax.swing.JPanel {
 
     private void jTable3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable3MouseClicked
         // TODO add your handling code here:
-        var col = this.jTable3.getSelectedColumn();
-        var row = this.jTable3.getSelectedRow();
+
+        var col = jTable3.getSelectedColumn();
+        int viewRow = jTable3.getSelectedRow();
+
+        var row = jTable3.convertRowIndexToModel(viewRow);
         MaterialDAO mr = new MaterialDAO();
 
         if (col == 12) {
 
-            var option = JOptionPane.showConfirmDialog(null, "Se va a eliminar el material");
+            var option = JOptionPane.showConfirmDialog(null, "Se va a eliminar el material ");
             if (option == JOptionPane.YES_OPTION) {
 
                 String codigo = this.jTable3.getModel().getValueAt(row, 1).toString();
                 Cliente clienteTabla = (Cliente) this.jTable3.getModel().getValueAt(row, 0);
-                
+
                 mr.delete(codigo, clienteTabla.getRuc());
                 cargarDatos();
             }
@@ -246,15 +250,13 @@ public class TodosMaterial extends javax.swing.JPanel {
             dialog.setSize(800, 600);
             dialog.setModal(true);
             dialog.setVisible(true);
-           
 
             dialog.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowDeactivated(WindowEvent e) {
                     cargarDatos();
                 }
-               
-                
+
                 @Override
                 public void windowClosing(WindowEvent e) {
                     cargarDatos();
@@ -264,7 +266,6 @@ public class TodosMaterial extends javax.swing.JPanel {
                 public void windowClosed(WindowEvent e) {
                     cargarDatos();
                 }
-                
 
             });
         }
@@ -272,10 +273,7 @@ public class TodosMaterial extends javax.swing.JPanel {
 
     private void jTable3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable3MouseReleased
         // TODO add your handling code here:
-        System.out.println(evt);
-        if (evt.isPopupTrigger()) {
-            this.jPopupMenu1.show(evt.getComponent(), evt.getX(), evt.getY());
-        }
+       
     }//GEN-LAST:event_jTable3MouseReleased
 
     private void jScrollPane3KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jScrollPane3KeyReleased
@@ -285,9 +283,7 @@ public class TodosMaterial extends javax.swing.JPanel {
 
     private void jScrollPane3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jScrollPane3MouseReleased
         // TODO add your handling code here:
-        if (evt.isPopupTrigger()) {
-            this.jPopupMenu1.show(evt.getComponent(), evt.getX(), evt.getY());
-        }
+     
     }//GEN-LAST:event_jScrollPane3MouseReleased
 
 

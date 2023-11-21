@@ -33,7 +33,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import org.apache.poi.ss.usermodel.Cell;
 import static org.apache.poi.ss.usermodel.CellType.BOOLEAN;
 import static org.apache.poi.ss.usermodel.CellType.FORMULA;
@@ -51,14 +50,14 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class FormMaterialReporte extends javax.swing.JPanel {
 
-    List<Material> insumos;
-    MaterialReporteDAO mr = new MaterialReporteDAO(HibernateUtil.getSessionFactory());
-    MaterialDAO md = new MaterialDAO();
+    static List<Material> insumos;
+    static MaterialReporteDAO mr = new MaterialReporteDAO(HibernateUtil.getSessionFactory());
+    static MaterialDAO md = new MaterialDAO();
     MaterialReporte materialReporte;
-    List<String> codigos;
-    ReporteDAO reporteDAO;
-            
-    Reporte reporte;
+    static List<String> codigos;
+    static ReporteDAO reporteDAO;
+
+    static Reporte reporte;
 
     /**
      * Creates new form FormMaterialReporte
@@ -66,51 +65,62 @@ public class FormMaterialReporte extends javax.swing.JPanel {
     public FormMaterialReporte() {
 
         initComponents();
+        reporteDAO = new ReporteDAO(HibernateUtil.getSessionFactory());
+
         cargarDatos();
-        this.reporteDAO=new ReporteDAO(HibernateUtil.getSessionFactory());
-        reporte=this.reporteDAO.read();
-        if (reporte==null) {
+        reporte = reporteDAO.read();
+        if (reporte == null) {
             //JOptionPane.showMessageDialog(null, "Cargue el reporte de produccion");
             return;
 
         }
 
-        this.codigos = generarFacturaExcel(cargarFacturas());
-        this.codigos.stream().forEach(x -> this.comboMaterial.addItem(x));
-        this.codigos.stream().forEach(x -> mr.create(new MaterialReporte(x)));
+        codigos = generarFacturaExcel(cargarFacturas());
+        codigos.stream().forEach(x -> comboMaterial.addItem(x));
+        codigos.stream().forEach(x -> mr.create(new MaterialReporte(x)));
 
     }
 
     public FormMaterialReporte(String codigo) {
 
         initComponents();
+        reporteDAO = new ReporteDAO(HibernateUtil.getSessionFactory());
+
         cargarDatos();
-        this.reporteDAO=new ReporteDAO(HibernateUtil.getSessionFactory());
-        reporte=this.reporteDAO.read();
-        if (reporte==null) {
+        reporte = reporteDAO.read();
+        if (reporte == null) {
             //JOptionPane.showMessageDialog(null, "Cargue el reporte de produccion");
             return;
 
         }
-        this.codigos = generarFacturaExcel(cargarFacturas());
+        codigos = generarFacturaExcel(cargarFacturas());
         //Guardar todos los codigos
 
         this.btnGuardar.setText("Actualizar");
         materialReporte = mr.readByCodigo(codigo);
 
-        Supplier<Stream<Material>> itemSelected = () -> this.insumos.stream().filter(x -> x.getDescripcion().equals(materialReporte.getDescripcion()));
+        Supplier<Stream<Material>> itemSelected = () -> insumos.stream().filter(x -> x.getDescripcion().equals(materialReporte.getDescripcion()));
         if (itemSelected.get().findAny().isPresent()) {
-            this.comboInsumos.setSelectedItem(itemSelected.get().findAny().get());
+            comboInsumos.setSelectedItem(itemSelected.get().findAny().get());
 
         }
-        this.codigos.stream().forEach(x -> this.comboMaterial.addItem(x));
-        this.comboMaterial.setSelectedItem(codigo);
+        codigos.stream().forEach(x -> comboMaterial.addItem(x));
+        comboMaterial.setSelectedItem(codigo);
     }
 
-    private void cargarDatos() {
+    public static void cargarDatos() {
 
         insumos = md.readAll();
-        insumos.stream().forEach(x -> this.comboInsumos.addItem(x));
+        insumos.stream().forEach(x -> comboInsumos.addItem(x));
+
+        reporte = reporteDAO.read();
+        if (reporte != null) {
+            codigos = generarFacturaExcel(cargarFacturas());
+            codigos.stream().forEach(x -> comboMaterial.addItem(x));
+            codigos.stream().forEach(x -> mr.create(new MaterialReporte(x)));
+            TodosMaterialReporte.cargarDatos();
+
+        }
 
     }
 
@@ -118,7 +128,7 @@ public class FormMaterialReporte extends javax.swing.JPanel {
         return factura.get(2).get(0).split(" - ")[1];
     }
 
-    private List<String> generarFacturaExcel(List<Map<Integer, List<String>>> archivoGeneral) {
+    private static List<String> generarFacturaExcel(List<Map<Integer, List<String>>> archivoGeneral) {
         Map<String, List<Map<Integer, List<String>>>> rucFacturas = new HashMap<>();
         var c = 0;
         for (Map<Integer, List<String>> factura : archivoGeneral) {
@@ -152,7 +162,7 @@ public class FormMaterialReporte extends javax.swing.JPanel {
                             i++;
                             elem = factura.get(i);
                         }
-                        if (si&&elem!=null) {
+                        if (si && elem != null) {
                             if (elem.size() > 7) {
                                 var codigo = String.valueOf((int) Double.parseDouble(elem.get(1)));
 
@@ -176,7 +186,7 @@ public class FormMaterialReporte extends javax.swing.JPanel {
         return new ArrayList<>(keys);
     }
 
-    public List<Map<Integer, List<String>>> cargarFacturas() {
+    public static List<Map<Integer, List<String>>> cargarFacturas() {
 
         try {
 
@@ -299,11 +309,11 @@ public class FormMaterialReporte extends javax.swing.JPanel {
         MaterialReporte material = new MaterialReporte();
 
         ClienteDAO cd = new ClienteDAO();
-        Cliente client = cd.readByRuc(insumos.get(this.comboInsumos.getSelectedIndex()).getCliente().getRuc());
+        Cliente client = cd.readByRuc(insumos.get(comboInsumos.getSelectedIndex()).getCliente().getRuc());
         material.setCliente(client);
-        material.setCodigo(this.comboMaterial.getSelectedItem().toString());
-        material.setCodigoInsumo(insumos.get(this.comboInsumos.getSelectedIndex()).getCodigo());
-        material.setDescripcion(insumos.get(this.comboInsumos.getSelectedIndex()).getDescripcion());
+        material.setCodigo(comboMaterial.getSelectedItem().toString());
+        material.setCodigoInsumo(insumos.get(comboInsumos.getSelectedIndex()).getCodigo());
+        material.setDescripcion(insumos.get(comboInsumos.getSelectedIndex()).getDescripcion());
         if (btnGuardar.getText().contains("Actualizar")) {
             mr.update(material, materialReporte.getCodigo());
             JOptionPane.showMessageDialog(null, "Se actualizo correctamente");
@@ -319,8 +329,8 @@ public class FormMaterialReporte extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGuardar;
-    private javax.swing.JComboBox<Material> comboInsumos;
-    private javax.swing.JComboBox<String> comboMaterial;
+    private static javax.swing.JComboBox<Material> comboInsumos;
+    private static javax.swing.JComboBox<String> comboMaterial;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     // End of variables declaration//GEN-END:variables

@@ -112,6 +112,7 @@ public class ValidarFacturaUtils {
             for (var contenido : factura.entrySet()) {
                 if (capturarFactura) {
                     listadoFacturas.put(contenido.getValue().get(1), 0);
+                    break;
                 }
                 if (contenido.getValue().contains("Pedido")) {
                     capturarFactura = true;
@@ -124,17 +125,25 @@ public class ValidarFacturaUtils {
             var capturarFactura = false;
             for (var contenido : factura.entrySet()) {
                 if (capturarFactura) {
+                    
                     listadoFacturasValidas.put(contenido.getValue().get(1), 0);
+                    
                 }
-                    if (contenido.getValue().contains("SRI")) {
+                    if (contenido.getValue().contains("No. FACTURA")) {
                     capturarFactura = true;
+                    
 
                 }
 
             }
         }
-        System.out.println(listadoFacturas);
-                System.out.println(lista);
+        for(var f:listadoFacturasValidas.entrySet()){
+            if(!listadoFacturas.containsKey(f.getKey())){
+                JOptionPane.showMessageDialog(null, "No existe la factura "+f.getKey()+" en el reporte de produccion");
+            }
+            
+            
+        }
 
         
     }

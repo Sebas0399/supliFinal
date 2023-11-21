@@ -39,6 +39,11 @@ public class MPTableModel extends AbstractTableModel {
         return columnNames[col];
     }
 
+    public void setData(Object[][] data) {
+        this.data = data;
+        fireTableDataChanged();
+    }
+    
 
  
 }

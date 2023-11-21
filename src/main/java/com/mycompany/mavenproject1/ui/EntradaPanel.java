@@ -179,12 +179,9 @@ public class EntradaPanel extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel4)
-                        .addGap(145, 145, 145))
+                        .addContainerGap(321, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 402, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(88, 88, 88)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -197,10 +194,14 @@ public class EntradaPanel extends javax.swing.JPanel {
                                         .addGap(18, 18, 18)
                                         .addComponent(reporteInsumos))))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(88, 88, 88)
-                                .addComponent(jLabel8)
-                                .addGap(28, 28, 28)
-                                .addComponent(validarFacturas)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 381, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap(27, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(88, 88, 88)
+                        .addComponent(jLabel8)
+                        .addGap(49, 49, 49)
+                        .addComponent(validarFacturas)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
@@ -236,8 +237,8 @@ public class EntradaPanel extends javax.swing.JPanel {
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(validarFacturas))
+                    .addComponent(validarFacturas)
+                    .addComponent(jLabel8))
                 .addContainerGap(143, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -249,7 +250,6 @@ public class EntradaPanel extends javax.swing.JPanel {
             setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
             getPaths().put("RP", path);
-            //Validar reporte de produccion//
             ValidarUtils validar = new ValidarUtils(path);
             if (validar.validar()) {
                 TodosMaterialReporte.regargarPanel();
@@ -258,6 +258,7 @@ public class EntradaPanel extends javax.swing.JPanel {
                 r.setRuta(path);
                 reporteDAO.deleteAll();
                 reporteDAO.create(r);
+                FormMaterialReporte.cargarDatos();
                 JOptionPane.showMessageDialog(null, "Reporte de produccion cargado correctamente");
             } else {
                 JOptionPane.showMessageDialog(null, "Ocurrio un error");

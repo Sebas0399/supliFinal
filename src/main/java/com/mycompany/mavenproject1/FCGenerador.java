@@ -9,10 +9,12 @@ import com.mycompany.mavenproject1.utils.FileUtils;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.model.Reporte;
 import com.mycompany.mavenproject1.utils.HibernateUtil;
+import com.mycompany.mavenproject1.utils.InformeInsumosUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -32,15 +34,14 @@ import static org.apache.poi.ss.usermodel.CellType.STRING;
  */
 public class FCGenerador {
 
-   
     private String savePath;
     private Cliente cliente;
     ReporteDAO reporteDAO;
 
-    public FCGenerador( Cliente cliente) {
-        
+    public FCGenerador(Cliente cliente) {
+
         this.cliente = cliente;
-        reporteDAO=new ReporteDAO(HibernateUtil.getSessionFactory());
+        reporteDAO = new ReporteDAO(HibernateUtil.getSessionFactory());
     }
 
     private List<String> extraerNumeros(String input) {
@@ -76,27 +77,26 @@ public class FCGenerador {
         return res;
     }
 
-    private void generarFacturaExcel(List<Map<Integer, List<String>>> archivoGeneral) {
+    private void generarFacturaExcel(List<Map<Integer, List<String>>> archivoGeneral, Date inicio, Date fin) {
         var listadoRUC = archivoGeneral.stream().map(x -> (x.get(2).get(0))).distinct().toList();
         var listRuc = obtenerRucs(listadoRUC);
 
         var listadoTotal = listRuc.stream().map(x -> getFacturasPorRuc(x, archivoGeneral)).toList();
 
         listadoTotal.forEach(x -> {
-
             var lFinal = new ArrayList<List<String>>();
             x.forEach(y -> {
                 var l = y.get(4);
                 var p = List.of(Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, StringUtils.agregarGuiones(l.get(1)), l.get(3));
                 lFinal.add(p);
             });
-            generarExcel(lFinal, x.get(0).get(2).get(0));
+            generarExcel(lFinal, x.get(0).get(2).get(0), inicio, fin);
 
         });
         JOptionPane.showMessageDialog(null, "Facturas Generadas");
     }
 
-    private void generarExcel(List<List<String>> lFinal, String nombreRuc) {
+    private void generarExcel(List<List<String>> lFinal, String nombreRuc, Date inicio, Date fin) {
 
         Set<List<String>> lFinalSet = new HashSet<>(lFinal);
         Workbook workbook = new HSSFWorkbook();
@@ -118,34 +118,57 @@ public class FCGenerador {
             Row r = sheet.createRow(rowNumber++);
             int k = 0;
             for (String j : x) {
-                r.createCell(k++).setCellValue(j);
+                if (k == x.size() - 1) {
+                    SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+
+                    try {
+                        if (formato.parse(j).after(inicio) && formato.parse(j).before(fin)) {
+                            r.createCell(k++).setCellValue(j);
+                        }
+                        
+                        else if (formato.parse(j).equals(inicio)
+                                || formato.parse(j).equals(fin)) {
+                            r.createCell(k++).setCellValue(j);
+                        }
+                        else{
+                            sheet.removeRowBreak(rowNumber);
+                        }
+                    } catch (ParseException ex) {
+                        Logger.getLogger(InformeInsumosUtils.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    r.createCell(k++).setCellValue(j);
+                    
+                }
+            }
+        }
+        if (sheet.getPhysicalNumberOfRows() > 2) {
+            String fileLocation = this.savePath + "\\" + StringUtils.tranformarNombre(cliente.getNombre()) + "_FC_" + nombreRuc + ".xls";
+
+            try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
+                workbook.write(outputStream);
+
+            } catch (IOException ex) {
+                Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            try {
+                workbook.close();
+            } catch (IOException ex) {
+                Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(null, "Ocurrio un errror");
+
             }
         }
 
-        String fileLocation = this.savePath + "\\" + StringUtils.tranformarNombre(cliente.getNombre()) + "_FC_" + nombreRuc + ".xls";
-
-        try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
-            workbook.write(outputStream);
-
-        } catch (IOException ex) {
-            Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        try {
-            workbook.close();
-        } catch (IOException ex) {
-            Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null, "Ocurrio un errror");
-
-        }
     }
 
-    public void cargarFacturas() {
+    public void cargarFacturas(Date inicio, Date fin) {
         this.savePath = FileUtils.saveData("Guardar Factura");
         if (this.savePath != null) {
             try {
                 List<Map<Integer, List<String>>> archivoGeneral = new ArrayList<>();
-                Reporte reporte=this.reporteDAO.read();
+                Reporte reporte = this.reporteDAO.read();
                 FileInputStream file = new FileInputStream(new File(reporte.getRuta()));
 
                 Workbook workbook = new XSSFWorkbook(file);
@@ -184,7 +207,7 @@ public class FCGenerador {
                 }
 
                 Thread generarFacturasThread = new Thread(() -> {
-                    generarFacturaExcel(archivoGeneral);
+                    generarFacturaExcel(archivoGeneral, inicio, fin);
                 });
                 generarFacturasThread.start();
             } catch (IOException ex) {
