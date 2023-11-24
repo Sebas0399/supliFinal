@@ -117,7 +117,7 @@ public class MPGenerador {
                     }
                 }
                 if(suma==0){
-                    JOptionPane.showMessageDialog(null, "La factura "+factura.get(5).get(1)+"no tiene materiales");
+                    JOptionPane.showMessageDialog(null, "La factura "+factura.get(5).get(1)+" no tiene materiales");
                     break;
                 }
                 var almidon = this.materialDAO.readLike("ALMIDON", cliente.getRuc());
@@ -125,7 +125,7 @@ public class MPGenerador {
                     String almidonTotal = (almidon.getCoeficienteConsumo() != null
                             ? redondear(new BigDecimal(suma).multiply(almidon.getCoeficienteConsumo()))
                             : "");
-                    var almidonFila = List.of(String.valueOf(StringUtils.agregarGuiones(factura.get(5).get(1))), Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, String.valueOf(contadorSerie), String.valueOf(contadorFila), almidon.getCodigo(), almidon.getSubpartida(), "0000", "0000", almidon.getDescripcion(), almidon.getTipoUnidad(), almidonTotal, "0", "0");
+                    var almidonFila = List.of(String.valueOf(StringUtils.agregarGuiones(factura.get(5).get(1))), Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, String.valueOf(contadorSerie), String.valueOf(contadorFila), almidon.getCodigo(), almidon.getSubpartida().split("-")[0], "0000", "0000", almidon.getDescripcion(), almidon.getTipoUnidad(), almidonTotal, "0", "0");
                     contadorFila++;
                     valore.add(almidonFila);
                 }
@@ -135,7 +135,7 @@ public class MPGenerador {
                     String ceraTotal = (cera.getCoeficienteConsumo() != null
                             ? redondear(new BigDecimal(suma).multiply(cera.getCoeficienteConsumo()))
                             : "");
-                    var ceraFila = List.of(String.valueOf(StringUtils.agregarGuiones(factura.get(5).get(1))), Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, String.valueOf(contadorSerie), String.valueOf(contadorFila), cera.getCodigo(), cera.getSubpartida(), "0000", "0000", cera.getDescripcion(), cera.getTipoUnidad(), ceraTotal, "0", "0");
+                    var ceraFila = List.of(String.valueOf(StringUtils.agregarGuiones(factura.get(5).get(1))), Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, String.valueOf(contadorSerie), String.valueOf(contadorFila), cera.getCodigo(), cera.getSubpartida().split("-")[0], "0000", "0000", cera.getDescripcion(), cera.getTipoUnidad(), ceraTotal, "0", "0");
                     contadorFila++;
                     valore.add(ceraFila);
 
@@ -153,8 +153,7 @@ public class MPGenerador {
                     } else {
 
                         var material = this.materialDAO.readByCodigo(materialReporte.getCodigoInsumo(), cliente.getRuc());
-                        System.out.println(material);
-                        valore.add(List.of(StringUtils.agregarGuiones(factura.get(5).get(1)), Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, String.valueOf(contadorSerie), String.valueOf(contadorFila), material.getCodigo(), material.getSubpartida(), "0000", "0000", material.getDescripcion(), material.getTipoUnidad(), redondear(new BigDecimal(sumaProd)), redondear(new BigDecimal(sumaProd).divide(new BigDecimal(10))), "0"));
+                        valore.add(List.of(StringUtils.agregarGuiones(factura.get(5).get(1)), Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, String.valueOf(contadorSerie), String.valueOf(contadorFila), material.getCodigo(), material.getSubpartida().split("-")[0], "0000", "0000", material.getDescripcion(), material.getTipoUnidad(), redondear(new BigDecimal(sumaProd)), redondear(new BigDecimal(sumaProd).divide(new BigDecimal(10))), "0"));
 
                     }
                     contadorFila++;
@@ -170,7 +169,6 @@ public class MPGenerador {
     }
 
     private void generarExcel(List<List<String>> lFinal, List<String> ruc) {
-
         Workbook workbook = new HSSFWorkbook();
         Sheet sheet = workbook.createSheet();
         List<List<String>> cabeceras = List.of(
