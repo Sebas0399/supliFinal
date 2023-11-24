@@ -142,12 +142,8 @@ public class GeneradorPanel extends javax.swing.JPanel {
             Runnable mRunnable = () -> {
                 Cargando c = new Cargando("Generando");
                 c.setVisible(true);
-                JDialog dialog = new JDialog();
-                dialog.setTitle("Generar Reporte De Insumos");
-                dialog.getContentPane().add(new FormInformeFinal(cliente, "factura"));
-                dialog.setSize(400, 150);
-                dialog.setModal(true);
-                dialog.setVisible(true);
+                FCGenerador generator = new FCGenerador(cliente);
+                generator.cargarFacturas();
                 c.dispose();
 
             };

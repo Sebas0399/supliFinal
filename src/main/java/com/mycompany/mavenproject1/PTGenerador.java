@@ -105,7 +105,7 @@ public class PTGenerador {
                         seguir = false;
                         contadorSerie++;
                     } else {
-                        var p = List.of(StringUtils.agregarGuiones(fila.get(1)), String.valueOf(contadorSerie), String.valueOf(contadorItem), Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, fila.get(6), "U", fila.get(10));
+                        var p = List.of(StringUtils.agregarGuiones(fila.get(1)), String.valueOf(contadorSerie), String.valueOf(contadorItem), Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, fila.get(6), "U", fila.get(fila.size()-1));
                         lFinal.add(p);
                         contadorItem++;
                         contadorFila++;

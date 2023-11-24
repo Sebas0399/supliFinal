@@ -74,24 +74,8 @@ public class FormInformeFinal extends javax.swing.JPanel {
                 window.dispose();
             });
 
-        } else if (tipo.equals("factura")) {
-            filterButton.addActionListener(((ActionEvent e) -> {
-                Date inicio = dateChooser.getDate();
-
-                Date fin = dateChooser2.getDate();
-                Runnable mRunnable = () -> {
-                    Cargando c = new Cargando("Generando");
-                    c.setVisible(true);
-                    FCGenerador ifu = new FCGenerador(cliente);
-                    ifu.cargarFacturas(inicio, quitarHora(fin));
-                    c.dispose();
-                };
-                Thread miHilo = new Thread(mRunnable);
-                miHilo.start();
-                Window window = SwingUtilities.getWindowAncestor(this);
-                window.dispose();
-            }));
-        } else {
+        } 
+         else {
             filterButton.addActionListener((ActionEvent e) -> {
                 Date inicio = dateChooser.getDate();
 
