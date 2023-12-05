@@ -10,6 +10,7 @@ import com.mycompany.mavenproject1.ui.EntradaPanel;
 import com.mycompany.mavenproject1.tablas.TodosMaterial;
 import com.mycompany.mavenproject1.tablas.TodosMaterialReporte;
 import com.mycompany.mavenproject1.ui.AdminPanel;
+import com.mycompany.mavenproject1.ui.FacturaPanel;
 
 public class Principal extends javax.swing.JFrame {
 
@@ -36,6 +37,8 @@ public class Principal extends javax.swing.JFrame {
             jInternalFrame4.add(pan4);
             AdminPanel adminPanel=new AdminPanel();
             jInternalFrame5.add(adminPanel);
+            FacturaPanel facturaPanel=new FacturaPanel();
+            jInternalFrame6.add(facturaPanel);
             c.dispose();
             this.setVisible(true);
 
@@ -61,6 +64,7 @@ public class Principal extends javax.swing.JFrame {
         jInternalFrame4 = new javax.swing.JInternalFrame();
         jInternalFrame3 = new javax.swing.JInternalFrame();
         jInternalFrame5 = new javax.swing.JInternalFrame();
+        jInternalFrame6 = new javax.swing.JInternalFrame();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1280, 720));
@@ -82,6 +86,21 @@ public class Principal extends javax.swing.JFrame {
         jInternalFrame5.setVisible(true);
         jTabbedPane1.addTab("Administrar", jInternalFrame5);
 
+        jInternalFrame6.setVisible(true);
+
+        javax.swing.GroupLayout jInternalFrame6Layout = new javax.swing.GroupLayout(jInternalFrame6.getContentPane());
+        jInternalFrame6.getContentPane().setLayout(jInternalFrame6Layout);
+        jInternalFrame6Layout.setHorizontalGroup(
+            jInternalFrame6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jInternalFrame6Layout.setVerticalGroup(
+            jInternalFrame6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Facturas", jInternalFrame6);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -95,7 +114,7 @@ public class Principal extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane1)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 348, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -144,6 +163,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JInternalFrame jInternalFrame3;
     private javax.swing.JInternalFrame jInternalFrame4;
     private javax.swing.JInternalFrame jInternalFrame5;
+    private javax.swing.JInternalFrame jInternalFrame6;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
 }
