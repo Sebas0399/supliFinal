@@ -35,8 +35,8 @@ import static org.apache.poi.ss.usermodel.CellType.STRING;
  */
 public class FCGenerador {
 
-    private String savePath;
     private Cliente cliente;
+    private String savePath;
     ReporteDAO reporteDAO;
 
     public FCGenerador(Cliente cliente) {
@@ -101,13 +101,13 @@ public class FCGenerador {
                 lFinal.add(algo.getValue());
             }
            
-            generarExcel(lFinal, x.get(0).get(2).get(0));
+            generarExcel(lFinal, cliente,savePath);
 
         });
         JOptionPane.showMessageDialog(null, "Facturas Generadas");
     }
 
-    private void generarExcel(List<List<String>> lFinal, String nombreRuc) {
+    public void generarExcel(List<List<String>> lFinal, Cliente cliente,String path) {
      
        
         Workbook workbook = new HSSFWorkbook();
@@ -135,7 +135,7 @@ public class FCGenerador {
             }
         }
 
-        String fileLocation = this.savePath + "\\" + StringUtils.tranformarNombre(cliente.getNombre()) + "_FC_" + nombreRuc + ".xls";
+        String fileLocation = path + "\\" + StringUtils.tranformarNombre(cliente.getNombre()) + "_FC_" + cliente.getRuc() + ".xls";
 
         try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
             workbook.write(outputStream);

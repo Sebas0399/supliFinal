@@ -4,6 +4,8 @@
  */
 package com.mycompany.mavenproject1.utils;
 
+import java.io.File;
+import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
@@ -74,6 +76,20 @@ public class FileUtils {
 
         if (r == JFileChooser.APPROVE_OPTION) {
             return j.getSelectedFile().getAbsolutePath();
+
+        } else {
+            return null;
+        }
+
+    }
+    public static List<File> cargarDataPdf(String titulo) {
+        var j = new JFileChooser(FileSystemView.getFileSystemView());
+        j.setMultiSelectionEnabled(true);
+        j.setDialogTitle(titulo);
+        j.setFileFilter(new FileNameExtensionFilter("PDF", "pdf"));
+        int r = j.showOpenDialog(null);
+        if (r == JFileChooser.APPROVE_OPTION) {
+            return List.of(j.getSelectedFiles());
 
         } else {
             return null;

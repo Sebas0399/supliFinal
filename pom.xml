@@ -41,7 +41,7 @@
             <artifactId>poi-ooxml</artifactId> 
             <version>5.2.0</version> 
         </dependency>
-        
+
         <dependency>
             <groupId>org.netbeans.external</groupId>
             <artifactId>AbsoluteLayout</artifactId>
@@ -60,7 +60,11 @@
         </dependency>
        
         
-
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>3.0.0</version>
+        </dependency>
 
        
     </dependencies>

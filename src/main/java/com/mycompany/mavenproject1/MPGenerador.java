@@ -23,6 +23,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +58,7 @@ public class MPGenerador {
 
     public MPGenerador(Cliente cliente) {
         this.cliente = cliente;
-        this.reporteDAO=new ReporteDAO(HibernateUtil.getSessionFactory());
+        this.reporteDAO = new ReporteDAO(HibernateUtil.getSessionFactory());
     }
 
     private static String obtenerRuc(Map<Integer, List<String>> factura) {
@@ -99,7 +101,7 @@ public class MPGenerador {
                             i++;
                             elem = factura.get(i);
                         }
-                        if (si&&elem!=null) {
+                        if (si && elem != null) {
 
                             if (elem.size() > 7) {
                                 var codigo = String.valueOf((int) Double.parseDouble(elem.get(1)));
@@ -116,8 +118,8 @@ public class MPGenerador {
                         }
                     }
                 }
-                if(suma==0){
-                    JOptionPane.showMessageDialog(null, "La factura "+factura.get(5).get(1)+" no tiene materiales");
+                if (suma == 0) {
+                    JOptionPane.showMessageDialog(null, "La factura " + factura.get(5).get(1) + " no tiene materiales");
                     break;
                 }
                 var almidon = this.materialDAO.readLike("ALMIDON", cliente.getRuc());
@@ -157,8 +159,27 @@ public class MPGenerador {
 
                     }
                     contadorFila++;
+
                 }
-                generarExcel(valore, factura.get(2));
+                Collections.sort(valore, Comparator
+                        .<List<Object>, Comparable>comparing(list -> (Comparable) ((List<Object>) list).get(4))
+                        .thenComparing(list -> ((List<Object>) list).get(6)));
+                List<List<String>> valoreFin = new ArrayList<>();
+                var setn = new HashMap<String, Integer>();
+                var init = 1;
+                for (var l : valore) {
+                    if (setn.containsKey(l.get(4))) {
+                        init++;
+                    } else {
+                        init = 1;
+
+                        setn.put(l.get(4), 0);
+
+                    }
+                    valoreFin.add(List.of(l.get(0), l.get(1), l.get(2), l.get(3), l.get(4), String.valueOf(init), l.get(6), l.get(7),
+                            l.get(8), l.get(9), l.get(10), l.get(11), l.get(12), l.get(13), l.get(14)));
+                }
+                generarExcel(valoreFin, factura.get(2));
 
                 contadorSerie++;
             }
@@ -213,7 +234,7 @@ public class MPGenerador {
             try {
 
                 List<Map<Integer, List<String>>> archivoGeneral = new ArrayList<>();
-                Reporte reporte=reporteDAO.read();
+                Reporte reporte = reporteDAO.read();
                 FileInputStream file = new FileInputStream(new File(reporte.getRuta()));
                 Workbook workbook = new XSSFWorkbook(file);
                 int numHojas = workbook.getNumberOfSheets();

@@ -10,6 +10,7 @@ import com.mycompany.mavenproject1.PTGenerador;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.DAO.ClienteDAO;
 import com.mycompany.mavenproject1.database.DAO.ReporteDAO;
+import com.mycompany.mavenproject1.utils.FileUtils;
 import com.mycompany.mavenproject1.utils.HibernateUtil;
 import java.awt.Color;
 import java.util.Map;
@@ -136,19 +137,25 @@ public class GeneradorPanel extends javax.swing.JPanel {
 
     private void generarFacturasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarFacturasActionPerformed
         // TODO add your handling code here:
-        if (reporteDAO.read() == null) {
-            JOptionPane.showMessageDialog(null, "Ingrese el reporte de produccion");
+        if (cliente.getNombre().contains("MEGASTOCK")) {
+            FCGenerador generator = new FCGenerador(cliente);
+            
+            //generator.generarExcel(lFinal, cliente, FileUtils.saveData("Guardar Facturas"));
         } else {
-            Runnable mRunnable = () -> {
-                Cargando c = new Cargando("Generando");
-                c.setVisible(true);
-                FCGenerador generator = new FCGenerador(cliente);
-                generator.cargarFacturas();
-                c.dispose();
+            if (reporteDAO.read() == null) {
+                JOptionPane.showMessageDialog(null, "Ingrese el reporte de produccion");
+            } else {
+                Runnable mRunnable = () -> {
+                    Cargando c = new Cargando("Generando");
+                    c.setVisible(true);
+                    FCGenerador generator = new FCGenerador(cliente);
+                    generator.cargarFacturas();
+                    c.dispose();
 
-            };
-            Thread miHilo = new Thread(mRunnable);
-            miHilo.start();
+                };
+                Thread miHilo = new Thread(mRunnable);
+                miHilo.start();
+            }
         }
 
 

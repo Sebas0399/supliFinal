@@ -14,12 +14,16 @@ import com.mycompany.mavenproject1.database.model.Reporte;
 import com.mycompany.mavenproject1.tablas.TodosMaterial;
 import com.mycompany.mavenproject1.tablas.TodosMaterialReporte;
 import com.mycompany.mavenproject1.utils.HibernateUtil;
+import com.mycompany.mavenproject1.utils.PdfUtils;
 import com.mycompany.mavenproject1.utils.ValidarFacturaUtils;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.io.IOException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
@@ -77,8 +81,8 @@ public class EntradaPanel extends javax.swing.JPanel {
         jLabel7 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
-        jLabel8 = new javax.swing.JLabel();
-        validarFacturas = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        cargarFacturas = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel1.setText("Cliente");
@@ -141,14 +145,14 @@ public class EntradaPanel extends javax.swing.JPanel {
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel4.setText("Reportes");
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel8.setText("Validar Facturas");
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel5.setText("Facturas");
 
-        validarFacturas.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        validarFacturas.setText("Validar");
-        validarFacturas.addActionListener(new java.awt.event.ActionListener() {
+        cargarFacturas.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        cargarFacturas.setText("Cargar");
+        cargarFacturas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                validarFacturasActionPerformed(evt);
+                cargarFacturasActionPerformed(evt);
             }
         });
 
@@ -168,11 +172,13 @@ public class EntradaPanel extends javax.swing.JPanel {
                         .addGap(125, 125, 125)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel3)
-                            .addComponent(jLabel2))
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel5))
                         .addGap(58, 58, 58)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cargarReporteProduccion, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(cargarInsumos, javax.swing.GroupLayout.Alignment.TRAILING))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(cargarReporteProduccion)
+                            .addComponent(cargarInsumos)
+                            .addComponent(cargarFacturas))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -196,13 +202,7 @@ public class EntradaPanel extends javax.swing.JPanel {
                             .addGroup(layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 381, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(27, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(88, 88, 88)
-                        .addComponent(jLabel8)
-                        .addGap(49, 49, 49)
-                        .addComponent(validarFacturas)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addContainerGap(27, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -233,13 +233,16 @@ public class EntradaPanel extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(reporteCliente)
                             .addComponent(jLabel6))))
-                .addGap(38, 38, 38)
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(validarFacturas)
-                    .addComponent(jLabel8))
-                .addContainerGap(143, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(38, 38, 38)
+                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cargarFacturas)
+                            .addComponent(jLabel5))))
+                .addContainerGap(191, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -341,19 +344,19 @@ public class EntradaPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_reporteClienteActionPerformed
 
-    private void validarFacturasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_validarFacturasActionPerformed
+    private void cargarFacturasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cargarFacturasActionPerformed
         // TODO add your handling code here:
-        var path = FileUtils.cargarData( "Cargar Listado de Facturas");
-
-        ValidarFacturaUtils validarUtils = new ValidarFacturaUtils(path);
-             validarUtils.validar();
-            
-        
-
-    }//GEN-LAST:event_validarFacturasActionPerformed
+        PdfUtils pdfUtils=new PdfUtils(cliente);
+        try {
+            pdfUtils.cargarPDFs();
+        } catch (IOException ex) {
+            Logger.getLogger(EntradaPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_cargarFacturasActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton cargarFacturas;
     private javax.swing.JButton cargarInsumos;
     private javax.swing.JButton cargarReporteProduccion;
     private javax.swing.JComboBox<Cliente> comboCliente;
@@ -361,14 +364,13 @@ public class EntradaPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JButton reporteCliente;
     private javax.swing.JButton reporteInsumos;
-    private javax.swing.JButton validarFacturas;
     // End of variables declaration//GEN-END:variables
 
     /**

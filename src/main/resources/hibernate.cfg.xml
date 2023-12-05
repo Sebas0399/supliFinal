@@ -24,6 +24,7 @@
         <mapping class="com.mycompany.mavenproject1.database.model.Material"/>
         <mapping class="com.mycompany.mavenproject1.database.model.MaterialReporte"/>
         <mapping class="com.mycompany.mavenproject1.database.model.Reporte"/>
+        <mapping class="com.mycompany.mavenproject1.database.model.Factura"/>
 
         <!-- <mapping resource="ruta/de/tu/archivo.hbm.xml" /> -->
         
