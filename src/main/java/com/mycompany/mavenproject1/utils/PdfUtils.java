@@ -50,7 +50,7 @@ public class PdfUtils {
             facturas.put(file.getAbsolutePath(), List.of(text.split("\\r?\\n")));
             document.close();
         }
-        guardarFacturas(facturas);
+       // guardarFacturas(facturas);
         return facturas;
     }
 
@@ -84,9 +84,10 @@ public class PdfUtils {
                         
 
             // Imprimir los elementos
-            System.out.println(elementos.size());
+           
             for (var elemento : elementos) {
                 System.out.println(elemento);
+                
             }
         }
         // generarExcel(elementosFactura, cliente, FileUtils.saveData("Guardar Facturas"));

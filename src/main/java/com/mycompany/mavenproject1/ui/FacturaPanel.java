@@ -4,8 +4,24 @@
  */
 package com.mycompany.mavenproject1.ui;
 
+import com.mycompany.mavenproject1.Constantes;
+import com.mycompany.mavenproject1.database.model.Cliente;
+import com.mycompany.mavenproject1.database.model.Factura;
+import com.mycompany.mavenproject1.tablas.model.ComboBoxEditor;
 import com.mycompany.mavenproject1.tablas.model.FacturaTableModel;
+import com.mycompany.mavenproject1.tablas.model.RenderTable;
+import com.mycompany.mavenproject1.utils.PdfUtils;
 import java.awt.Color;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 
 /**
  *
@@ -16,13 +32,108 @@ public class FacturaPanel extends javax.swing.JPanel {
     /**
      * Creates new form FacturaPanel
      */
+    private int numeroItems;
+
     public FacturaPanel() {
         initComponents();
         this.setBounds(0, 0, 800, 600);
 
         this.setBackground(Color.LIGHT_GRAY);
         FacturaTableModel facturaTableModel = new FacturaTableModel();
+
         tableFacturas.setModel(facturaTableModel);
+        tableFacturas.setDefaultRenderer(Object.class, new RenderTable());
+        
+
+    }
+
+    private static int contarTotalValores(Map<List<List<String>>, List<List<String>>> items) {
+        int total = 0;
+
+        // Iterar a través de los valores del mapa y contar
+        for (List<List<String>> value : items.values()) {
+            total += value.size();
+        }
+
+        return total;
+    }
+
+    public void actualizarTabla(Map< List<List<String>>, List<List<String>>> items) {
+        var totalItems
+                = (contarTotalValores(items));
+
+        Object[][] datos = new Object[totalItems][9];
+
+        JComboBox combo = new JComboBox();
+        combo.addItem("SApo");
+        combo.addItem("SApo");
+        combo.addItem("SApo");
+        combo.addItem("SApo");
+        combo.addItem("SApo");
+        combo.addItem("SApo");
+        combo.addItem("SApo");
+
+        var contadorItems = 0;
+        for (var item : items.entrySet()) {
+            System.out.println(item.getValue());
+
+            for (var itemPeq : item.getValue()) {
+                var lenItems = itemPeq.size();
+                if (lenItems > 9) {
+
+                    datos[contadorItems] = new Object[]{
+                        item.getKey().get(0).get(3),
+                        itemPeq.get(1), "", combo, "", "", "", "", ""
+                    };
+                } else {
+                    var data = itemPeq.get(0).split(" ");
+                    System.out.println(Arrays.toString(data));
+                    datos[contadorItems] = new Object[]{
+                        item.getKey().get(0).get(3),
+                        data[data.length - 1], "", combo, "", "", "", "", ""
+                    };
+                }
+
+                contadorItems++;
+            }
+
+        }
+
+        FacturaTableModel facturaTableModel = new FacturaTableModel(datos);
+        tableFacturas.setModel(facturaTableModel);
+    }
+
+    public Map< List<List<String>>, List<List<String>>> extraerItems(Map<String, List<String>> facturas) {
+
+        Map< List<List<String>>, List<List<String>>> map = new HashMap<>();
+        var initContador = 34;
+        for (var factura : facturas.entrySet()) {
+            List<List<String>> elementosFactura = new ArrayList<>();
+            List<List<String>> cabeceraFactura = new ArrayList<>();
+            List<String> elementos = new ArrayList<>();
+            var fecha = factura.getValue().get(1);
+            var numeroFactura = factura.getValue().get(17);
+            //var clienteRuc = cliente.getRuc();
+            //var ruta = factura.getKey();
+
+            cabeceraFactura.add(List.of(Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, numeroFactura, fecha));
+            for (int i = initContador; i < factura.getValue().size(); i++) {
+                if (factura.getValue().get(i).trim().contains("SUBTOTAL")) {
+                    break;
+                } else {
+                    elementos.add(factura.getValue().get(i));
+                }
+            }
+
+            // Imprimir los elementos
+            for (int i = 0; i < elementos.size() - 4; i++) {
+                elementosFactura.add(List.of((elementos.get(i).split("  "))));
+
+            }
+            map.put(cabeceraFactura, elementosFactura);
+        }
+        return map;
+
     }
 
     /**
@@ -35,7 +146,7 @@ public class FacturaPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        comboEmpresa = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
@@ -51,8 +162,6 @@ public class FacturaPanel extends javax.swing.JPanel {
         jButton2 = new javax.swing.JButton();
 
         jLabel1.setText("Empresa");
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jLabel2.setText("Factura No. *");
 
@@ -98,7 +207,7 @@ public class FacturaPanel extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(82, 82, 82)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 329, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(comboEmpresa, javax.swing.GroupLayout.PREFERRED_SIZE, 329, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addGap(38, 38, 38)
@@ -125,9 +234,9 @@ public class FacturaPanel extends javax.swing.JPanel {
                 .addComponent(jButton1)
                 .addGap(267, 267, 267))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(18, Short.MAX_VALUE)
+                .addContainerGap(28, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 864, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(17, 17, 17))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -135,7 +244,7 @@ public class FacturaPanel extends javax.swing.JPanel {
                 .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(comboEmpresa, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(7, 7, 7)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
@@ -151,7 +260,7 @@ public class FacturaPanel extends javax.swing.JPanel {
                     .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2)))
@@ -160,13 +269,22 @@ public class FacturaPanel extends javax.swing.JPanel {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        PdfUtils pdfUtils = new PdfUtils((Cliente) comboEmpresa.getSelectedItem());
+        try {
+            var facturas = pdfUtils.cargarPDFs();
+            var items = extraerItems(facturas);
+            actualizarTabla(items);
+        } catch (IOException ex) {
+            Logger.getLogger(FacturaPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }//GEN-LAST:event_jButton2ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<Cliente> comboEmpresa;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

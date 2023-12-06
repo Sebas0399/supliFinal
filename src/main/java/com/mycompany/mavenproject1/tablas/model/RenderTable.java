@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -31,9 +32,12 @@ public class RenderTable extends DefaultTableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         if (value instanceof JButton boton) {
             return boton;
-        }
-        else if(value instanceof JCheckBox box){
+        } else if (value instanceof JCheckBox box) {
             return box;
+        } else if (value instanceof JComboBox) {
+            JComboBox<?> comboBox = (JComboBox<?>) value;
+            comboBox.setSelectedItem(comboBox.getSelectedItem()); // Esto puede ayudar a que el JComboBox se despliegue correctamente
+            return comboBox;
         }
 
         return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody

@@ -49,5 +49,12 @@ public class FacturaTableModel extends AbstractTableModel {
     public String getColumnName(int col) {
         return columnNames[col];
     }
-
+    public void setData(Object[][] data) {
+        this.data = data;
+        fireTableDataChanged();
+    }
+  @Override
+    public boolean isCellEditable(int row, int column) {
+        return column == 3; // Hacer editable solo la columna del JComboBox
+    }
 }
