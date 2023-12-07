@@ -78,11 +78,9 @@ public class MPGenerador {
                 rucFacturas.get(ruc).add(factura);
             }
         }
-        //generarMP(rucFacturas);
 
         for (Map.Entry<String, List<Map<Integer, List<String>>>> entry : rucFacturas.entrySet()) {
             c++;
-            String ruc = entry.getKey();
             List<Map<Integer, List<String>>> facturas = entry.getValue();
             List<List<String>> valore = new ArrayList<>();
             var contadorSerie = 1;
@@ -165,9 +163,43 @@ public class MPGenerador {
                         .<List<Object>, Comparable>comparing(list -> (Comparable) ((List<Object>) list).get(4))
                         .thenComparing(list -> ((List<Object>) list).get(6)));
                 List<List<String>> valoreFin = new ArrayList<>();
+                Map<List<String>, List<String>> elemtentosFactura = new HashMap<>();
+
+                System.out.println(valore);
+                for (var l : valore) {
+
+                    if (elemtentosFactura.containsKey(List.of(l.get(0), l.get(6)))) {
+                        var valorSuma = Double.valueOf(l.get(12).replace(',', '.')) + Double.valueOf(elemtentosFactura.get(List.of(l.get(0), l.get(6))).get(12).replace(',', '.'));
+                        var valorSumaDesp = Double.valueOf(l.get(13).replace(',', '.')) + Double.valueOf(elemtentosFactura.get(List.of(l.get(0), l.get(6))).get(13).replace(',', '.'));
+                        elemtentosFactura.remove(List.of(l.get(0), l.get(6)));
+
+                        elemtentosFactura.put(List.of(l.get(0), l.get(6)), List.of(l.get(0), l.get(1), l.get(2), l.get(3), l.get(4), l.get(5), l.get(6), l.get(7),
+                                l.get(8), l.get(9), l.get(10), l.get(11), redondear(new BigDecimal(valorSuma)), redondear(new BigDecimal(valorSumaDesp)), l.get(14)));
+
+//init++;
+                    } else {
+                        elemtentosFactura.put(List.of(l.get(0), l.get(6)), List.of(l.get(0), l.get(1), l.get(2), l.get(3), l.get(4), l.get(5), l.get(6), l.get(7),
+                                l.get(8), l.get(9), l.get(10), l.get(11), l.get(12), l.get(13), l.get(14)));
+
+                    }
+
+                }
+
+                for (var algo : elemtentosFactura.entrySet()) {
+                    var lista = algo.getValue();
+
+                    valoreFin.add(List.of(lista.get(0), lista.get(1), lista.get(2), lista.get(3), lista.get(4), lista.get(5), lista.get(6), lista.get(7),
+                            lista.get(8), lista.get(9), lista.get(10), lista.get(11), lista.get(12), lista.get(13), lista.get(14)));
+                }
+
+                Collections.sort(valoreFin, Comparator
+                        .<List<Object>, Comparable>comparing(list -> (Comparable) ((List<Object>) list).get(4))
+                        .thenComparing(list -> ((List<Object>) list).get(6)));
+                List<List<String>> valoreFinal = new ArrayList<>();
                 var setn = new HashMap<String, Integer>();
                 var init = 1;
-                for (var l : valore) {
+                for (var l : valoreFin) {
+                    System.out.println(l);
                     if (setn.containsKey(l.get(4))) {
                         init++;
                     } else {
@@ -176,10 +208,10 @@ public class MPGenerador {
                         setn.put(l.get(4), 0);
 
                     }
-                    valoreFin.add(List.of(l.get(0), l.get(1), l.get(2), l.get(3), l.get(4), String.valueOf(init), l.get(6), l.get(7),
+                    valoreFinal.add(List.of(l.get(0), l.get(1), l.get(2), l.get(3), l.get(4), String.valueOf(init), l.get(6), l.get(7),
                             l.get(8), l.get(9), l.get(10), l.get(11), l.get(12), l.get(13), l.get(14)));
                 }
-                generarExcel(valoreFin, factura.get(2));
+                generarExcel(valoreFinal, factura.get(2));
 
                 contadorSerie++;
             }

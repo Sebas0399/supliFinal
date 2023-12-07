@@ -87,18 +87,6 @@ public class Principal extends javax.swing.JFrame {
         jTabbedPane1.addTab("Administrar", jInternalFrame5);
 
         jInternalFrame6.setVisible(true);
-
-        javax.swing.GroupLayout jInternalFrame6Layout = new javax.swing.GroupLayout(jInternalFrame6.getContentPane());
-        jInternalFrame6.getContentPane().setLayout(jInternalFrame6Layout);
-        jInternalFrame6Layout.setHorizontalGroup(
-            jInternalFrame6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        jInternalFrame6Layout.setVerticalGroup(
-            jInternalFrame6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-
         jTabbedPane1.addTab("Facturas", jInternalFrame6);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
