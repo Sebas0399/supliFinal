@@ -4,10 +4,7 @@
  */
 package com.mycompany.mavenproject1.database.DAO;
 
-import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.model.Material;
-import com.mycompany.mavenproject1.database.model.MaterialReporte;
-import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.Session;
@@ -231,5 +228,31 @@ public class MaterialDAO implements IMaterialDAO {
         }
 
         return material;
+    }
+
+    @Override
+    public List<Material> readByRuc(String ruc) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+        List<Material> materiales = new ArrayList<>();
+
+        try {
+            transaction = session.beginTransaction();
+            materiales = session.createQuery("SELECT m FROM Material m WHERE m.cliente.ruc = :ruc", Material.class)
+                    
+                    .setParameter("ruc", ruc)
+                    .getResultList();
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+
+            return null;
+        } finally {
+            session.close();
+        }
+
+        return materiales;
     }
 }

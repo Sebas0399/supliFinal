@@ -19,4 +19,5 @@ public interface IMaterialDAO {
     public Boolean update(Material material);
     public Boolean deleteAll();
     public Material readLike(String codigo,String ruc);
+    public List<Material> readByRuc(String ruc);
 }

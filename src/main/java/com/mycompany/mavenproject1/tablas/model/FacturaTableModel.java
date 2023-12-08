@@ -12,7 +12,7 @@ import javax.swing.table.AbstractTableModel;
  */
 public class FacturaTableModel extends AbstractTableModel {
 
-    private String[] columnNames = {"No.", "Cantidad", "Descripción insumo", "Producto terminado", "Unidada de medida", "Largo", "Ancho", "Modificar", "Eliminar"};
+    private String[] columnNames = {"Id","Cliente","No.","Fecha", "Cantidad", "Descripción insumo", "Producto terminado", "Unidad de medida", "Largo", "Ancho", "Modificar", "Eliminar"};
     private Object[][] data;
 
     public FacturaTableModel(Object[][] data) {
@@ -53,8 +53,28 @@ public class FacturaTableModel extends AbstractTableModel {
         this.data = data;
         fireTableDataChanged();
     }
-  @Override
-    public boolean isCellEditable(int row, int column) {
-        return column == 3; // Hacer editable solo la columna del JComboBox
+
+    public void updateRow(int row, Object[] rowData) {
+        for (int col = 0; col < getColumnCount(); col++) {
+            data[row][col] = rowData[col];
+        }
+        fireTableRowsUpdated(row, row);
     }
+
+    public void addRow(Object[] rowData) {
+        Object[][] newData = new Object[getRowCount() + 1][getColumnCount()];
+        System.arraycopy(data, 0, newData, 0, getRowCount());
+        newData[getRowCount()] = rowData;
+        data = newData;
+        fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
+    }
+
+    public void removeRow(int row) {
+        Object[][] newData = new Object[getRowCount() - 1][getColumnCount()];
+        System.arraycopy(data, 0, newData, 0, row);
+        System.arraycopy(data, row + 1, newData, row, getRowCount() - row - 1);
+        data = newData;
+        fireTableRowsDeleted(row, row);
+    }
+   
 }
