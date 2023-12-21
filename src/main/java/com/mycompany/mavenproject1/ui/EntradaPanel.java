@@ -9,6 +9,7 @@ import com.mycompany.mavenproject1.utils.InsumosUtils;
 import com.mycompany.mavenproject1.utils.ValidarUtils;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.DAO.ClienteDAO;
+import com.mycompany.mavenproject1.database.DAO.MaterialReporteDAO;
 import com.mycompany.mavenproject1.database.DAO.ReporteDAO;
 import com.mycompany.mavenproject1.database.model.Reporte;
 import com.mycompany.mavenproject1.tablas.TodosMaterial;
@@ -261,6 +262,8 @@ public class EntradaPanel extends javax.swing.JPanel {
                 r.setRuta(path);
                 reporteDAO.deleteAll();
                 reporteDAO.create(r);
+                MaterialReporteDAO materialReporteDAO=new MaterialReporteDAO(HibernateUtil.getSessionFactory());
+                materialReporteDAO.deleteAll();
                 FormMaterialReporte.cargarDatos();
                 JOptionPane.showMessageDialog(null, "Reporte de produccion cargado correctamente");
             } else {

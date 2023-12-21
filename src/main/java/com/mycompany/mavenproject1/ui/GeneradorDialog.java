@@ -14,6 +14,7 @@ import com.mycompany.mavenproject1.utils.FileUtils;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +33,7 @@ import org.apache.poi.ss.usermodel.Workbook;
  * @author Administrator
  */
 public class GeneradorDialog extends javax.swing.JPanel {
-
+    
     MaterialDAO materialDAO;
     TableModel datos;
 
@@ -43,7 +44,7 @@ public class GeneradorDialog extends javax.swing.JPanel {
         initComponents();
         materialDAO = new MaterialDAO();
         datos = FacturaPanel.tableFacturas.getModel();
-
+        
     }
 
     /**
@@ -138,7 +139,7 @@ public class GeneradorDialog extends javax.swing.JPanel {
         var nameCliente = "";
         for (var row = 0; row < rowCount; row++) {
             List<String> listaDatos = new ArrayList<>();
-
+            
             for (var col = 0; col < colCount; col++) {
                 listaDatos.add(String.valueOf(datos.getValueAt(row, col)));
             }
@@ -156,14 +157,14 @@ public class GeneradorDialog extends javax.swing.JPanel {
 
     }//GEN-LAST:event_generarFacturasActionPerformed
     public void generarExcel(List<List<String>> lFinal, Cliente empresa, String cliente, String path) {
-
+        
         Workbook workbook = new HSSFWorkbook();
         Sheet sheet = workbook.createSheet();
         List<List<String>> cabeceras = List.of(
                 List.of("Subpartida", "Complementario", "Suplementario", "Numero de factura", "Numero de item"),
                 List.of("prdt_hs_part_cd", "prdt_hs_cpmt_cd", "prdt_hs_spmt_cd", "ntfc_no", "ntfc_de")
         );
-
+        
         int rowNumber = 0;
         for (List<String> cabecera : cabeceras) {
             Row header = sheet.createRow(rowNumber++);
@@ -171,45 +172,45 @@ public class GeneradorDialog extends javax.swing.JPanel {
                 header.createCell(i).setCellValue(cabecera.get(i));
             }
         }
-
+        
         for (List<String> x : lFinal) {
             Row r = sheet.createRow(rowNumber++);
             int k = 0;
             for (String j : x) {
-
+                
                 r.createCell(k++).setCellValue(j);
-
+                
             }
         }
-
+        
         String fileLocation = path + "\\" + StringUtils.tranformarNombre(empresa.getNombre()) + "_FC_" + cliente + ".xls";
-
+        
         try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
             workbook.write(outputStream);
-
+            
         } catch (IOException ex) {
             Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        
         try {
             workbook.close();
         } catch (IOException ex) {
             Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, "Ocurrio un errror");
-
+            
         }
     }
     private void generarProductoTerminadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarProductoTerminadoActionPerformed
         // TODO add your handling code here:
         var ruta = FileUtils.saveData("Guardar Producto Terminado");
-
+        
         Map<String, List<String>> mapLista = new HashMap<>();
         var rowCount = datos.getRowCount();
         var colCount = datos.getColumnCount();
         var nameCliente = "";
         for (var row = 0; row < rowCount; row++) {
             List<String> listaDatos = new ArrayList<>();
-
+            
             for (var col = 0; col < colCount; col++) {
                 listaDatos.add(String.valueOf(datos.getValueAt(row, col)));
             }
@@ -227,11 +228,11 @@ public class GeneradorDialog extends javax.swing.JPanel {
                         listaDatos.get(8),
                         listaDatos.get(9)
                 ));
-
+                
             } else {
-
+                
                 mapLista.put(listaDatos.get(2), listaDatos);
-
+                
             }
         }
         List<List<String>> lFinal = new ArrayList<>();
@@ -247,14 +248,14 @@ public class GeneradorDialog extends javax.swing.JPanel {
 
     }//GEN-LAST:event_generarProductoTerminadoActionPerformed
     public void generarExcelPT(List<List<String>> lFinal, Cliente empresa, String cliente, String path) {
-
+        
         Workbook workbook = new HSSFWorkbook();
         Sheet sheet = workbook.createSheet();
         List<List<String>> cabeceras = List.of(
                 List.of("No. Factura asociada", "el número de serie", "Numero de item", "Subpartida", "Complementario", "Suplementario", "Descripción", "Tipo Unidad", "Cantidad Transformado"),
                 List.of("ntfc_prdt_cl_cd", "sn", "prdt_item_sn", "prdt_hs_part_cd", "prdt_hs_cpmt_cd", "prdt_hs_spmt_cd", "prdt_prdt_desc", "prdt_ut_tp_cd", "prdt_trsm_use_qt")
         );
-
+        
         int rowNumber = 0;
         for (List<String> cabecera : cabeceras) {
             Row header = sheet.createRow(rowNumber++);
@@ -262,37 +263,37 @@ public class GeneradorDialog extends javax.swing.JPanel {
                 header.createCell(i).setCellValue(cabecera.get(i));
             }
         }
-
+        
         for (List<String> x : lFinal) {
             Row r = sheet.createRow(rowNumber++);
             int k = 0;
             for (String j : x) {
-
+                
                 r.createCell(k++).setCellValue(j);
-
+                
             }
         }
-
+        
         String fileLocation = path + "\\" + StringUtils.tranformarNombre(empresa.getNombre()) + "_PT_" + cliente + ".xls";
-
+        
         try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
             workbook.write(outputStream);
-
+            
         } catch (IOException ex) {
             Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        
         try {
             workbook.close();
         } catch (IOException ex) {
             Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, "Ocurrio un errror");
-
+            
         }
     }
-
+    
     public void generarExcelMP(List<List<String>> lFinal, Cliente empresa, String cliente, String path) {
-
+        
         Workbook workbook = new HSSFWorkbook();
         Sheet sheet = workbook.createSheet();
         List<List<String>> cabeceras = List.of(
@@ -301,7 +302,7 @@ public class GeneradorDialog extends javax.swing.JPanel {
                 List.of("csgd_ntfc_no", "prdt_hs_part_cd", "prdt_hs_cpmt_cd", "prdt_hs_spmt_cd", "prdt_sn", "csgd_item_sn", "csgd_cmdt_cd", "csgd_hs_part_cd", "csgd_hs_cpmt_cd", "csgd_hs_spmt_cd", "csgd_prdt_desc", "csgd_ut_tp_cd", "csgd_trsm_use_qt", "csgd_duse_qt", "csgd_use_ips_duse_qt"
                 )
         );
-
+        
         int rowNumber = 0;
         for (List<String> cabecera : cabeceras) {
             Row header = sheet.createRow(rowNumber++);
@@ -309,50 +310,59 @@ public class GeneradorDialog extends javax.swing.JPanel {
                 header.createCell(i).setCellValue(cabecera.get(i));
             }
         }
-
+        
         for (List<String> x : lFinal) {
             Row r = sheet.createRow(rowNumber++);
             int k = 0;
             for (String j : x) {
-
+                
                 r.createCell(k++).setCellValue(j);
-
+                
             }
         }
-
+        
         String fileLocation = path + "\\" + StringUtils.tranformarNombre(empresa.getNombre()) + "_MP_" + cliente + ".xls";
-
+        
         try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
             workbook.write(outputStream);
-
+            
         } catch (IOException ex) {
             Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        
         try {
             workbook.close();
         } catch (IOException ex) {
             Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, "Ocurrio un errror");
-
+            
         }
     }
     private void generarMediosProduccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarMediosProduccionActionPerformed
         // TODO add your handling code here:
         var ruta = FileUtils.saveData("Guardar Medios de Produccion");
-
+        
         Map<String, List<String>> mapLista = new HashMap<>();
         var rowCount = datos.getRowCount();
         var colCount = datos.getColumnCount();
         var nameCliente = "";
         for (var row = 0; row < rowCount; row++) {
             List<String> listaDatos = new ArrayList<>();
-
+            
             for (var col = 0; col < colCount; col++) {
                 listaDatos.add(String.valueOf(datos.getValueAt(row, col)));
             }
             if (mapLista.containsKey(listaDatos.get(2))) {
-                var sumaVal = Double.valueOf(listaDatos.get(4)) + Double.valueOf(mapLista.get(listaDatos.get(2)).get(4));
+                var largo = new BigDecimal(listaDatos.get(8));
+                var ancho = new BigDecimal(listaDatos.get(9));
+                var cantidad = new BigDecimal(listaDatos.get(4));
+                var tot = largo.multiply(ancho).divide(BigDecimal.valueOf(10000));
+                var totCant = tot.multiply(cantidad).multiply(Constantes.COEFICIENTE_MEGA);
+                var ant = new BigDecimal(mapLista.get(listaDatos.get(2)).get(4));
+                
+                var sumaVal
+                        = totCant.add(ant);
+                
                 mapLista.put(listaDatos.get(2), List.of(
                         listaDatos.get(0),
                         listaDatos.get(1),
@@ -361,25 +371,38 @@ public class GeneradorDialog extends javax.swing.JPanel {
                         String.valueOf(sumaVal),
                         listaDatos.get(5),
                         listaDatos.get(6),
-                        listaDatos.get(7),
-                        listaDatos.get(8),
-                        listaDatos.get(9)
+                        listaDatos.get(7)
+                        
                 ));
-
+                
             } else {
-
-                mapLista.put(listaDatos.get(2), listaDatos);
-
+                
+                var largo = new BigDecimal(listaDatos.get(8));
+                var ancho = new BigDecimal(listaDatos.get(9));
+                var cantidad = new BigDecimal(listaDatos.get(4));
+                var tot = largo.multiply(ancho).divide(BigDecimal.valueOf(10000));
+                var totCant = tot.multiply(cantidad).multiply(Constantes.COEFICIENTE_MEGA);
+                mapLista.put(listaDatos.get(2), List.of(
+                        listaDatos.get(0),
+                        listaDatos.get(1),
+                        listaDatos.get(2),
+                        listaDatos.get(3),
+                        totCant.toString(),
+                        listaDatos.get(5),
+                        listaDatos.get(6),
+                        listaDatos.get(7)
+                ));
             }
         }
+        System.out.println(mapLista);
         List<List<String>> lFinal = new ArrayList<>();
-
+        
         var numSerie = 1;
         for (var e : mapLista.entrySet()) {
             var lPeq = e.getValue();
             nameCliente = lPeq.get(1);
             Material m = materialDAO.readByCodigo(lPeq.get(5), FacturaPanel.cliente.getRuc());
-
+            var transformado=new BigDecimal(lPeq.get(4)).round(new MathContext(3));
             lFinal.add(List.of(lPeq.get(2),
                     Constantes.SUBPARTIDA_FC,
                     Constantes.COMPLEMENTARIO_FC,
@@ -394,7 +417,7 @@ public class GeneradorDialog extends javax.swing.JPanel {
                     "0",
                     String.valueOf(new BigDecimal(lPeq.get(4)).multiply(m.getPorcentajeMerma()))
             ));
-
+            
             numSerie++;
         }
         generarExcelMP(lFinal, FacturaPanel.cliente, nameCliente, ruta);

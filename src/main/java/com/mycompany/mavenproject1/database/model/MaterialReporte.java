@@ -19,7 +19,7 @@ public class MaterialReporte {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mare_id")
     private int id;
-    @Column(name = "mare_codigo")
+    @Column(name = "mare_codigo",unique = true)
     private String codigo;
     @Column(name = "mare_codigo_insumo")
     private String codigoInsumo;

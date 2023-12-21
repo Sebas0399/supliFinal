@@ -97,19 +97,25 @@ public class FormMaterialReporte extends javax.swing.JPanel {
         //Guardar todos los codigos
 
         this.btnGuardar.setText("Actualizar");
+        System.out.println(codigo);
         materialReporte = mr.readByCodigo(codigo);
+                System.out.println(mr);
 
-        Supplier<Stream<Material>> itemSelected = () -> insumos.stream().filter(x -> x.getDescripcion().equals(materialReporte.getDescripcion()));
-        if (itemSelected.get().findAny().isPresent()) {
-            comboInsumos.setSelectedItem(itemSelected.get().findAny().get());
+        if (materialReporte.getDescripcion() != null) {
+            Supplier<Stream<Material>> itemSelected = () -> insumos.stream().filter(x -> x.getDescripcion().equals(materialReporte.getDescripcion()));
 
+            if (itemSelected.get().findAny().isPresent()) {
+                comboInsumos.setSelectedItem(itemSelected.get().findAny().get());
+
+            }
         }
+
         codigos.stream().forEach(x -> comboMaterial.addItem(x));
         comboMaterial.setSelectedItem(codigo);
     }
 
     public static void cargarDatos() {
-
+        
         insumos = md.readAll();
         insumos.stream().forEach(x -> comboInsumos.addItem(x));
 
@@ -117,7 +123,7 @@ public class FormMaterialReporte extends javax.swing.JPanel {
         if (reporte != null) {
             codigos = generarFacturaExcel(cargarFacturas());
             codigos.stream().forEach(x -> comboMaterial.addItem(x));
-            codigos.stream().forEach(x -> mr.create(new MaterialReporte(x)));
+            codigos.stream().forEach(x -> mr.create(new MaterialReporte(x.trim())));
             TodosMaterialReporte.cargarDatos();
 
         }

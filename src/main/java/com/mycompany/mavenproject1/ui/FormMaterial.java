@@ -346,7 +346,7 @@ public class FormMaterial extends javax.swing.JPanel {
         var porcentajeDesperdicio = this.txtPDesperdicio.getText();
         var calculaDesperdicio = this.bolDesperdicio;
         var aplicaFormula = this.bolFormula;
-        var cliente=clientes.get(this.comboCliente.getSelectedIndex());
+        var clienteForm=clientes.get(this.comboCliente.getSelectedIndex());
         Material mat = new Material();
         if (!codigo.isEmpty()) {
             mat.setCodigo(codigo);
@@ -380,7 +380,7 @@ public class FormMaterial extends javax.swing.JPanel {
 
         }
 
-        mat.setCliente(cliente);
+        mat.setCliente(clienteForm);
         if (aplicaFormula.isSelected() == true) {
             if (!coeficienteConsumo.isEmpty()) {
                 mat.setCoeficienteConsumo(new BigDecimal(coeficienteConsumo));

@@ -4,6 +4,11 @@
  */
 package com.mycompany.mavenproject1;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+
 /**
  *
  * @author Sebas
@@ -25,5 +30,25 @@ public class StringUtils {
         else{
             return null;
         }
+    }
+    public static String transformarFecha(Date date){
+
+        // Convertir la cadena de fecha original a un objeto Date
+        
+        
+        // Crear un nuevo formato para la fecha deseada
+        SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd/MM/yy");
+        // Formatear la fecha en el nuevo formato
+        String fechaFormateada = formatoDeseado.format(date);
+        // Imprimir la fecha formateada
+        return fechaFormateada;
+    }
+    public static String formatearFecha(String fecha){
+        var f=fecha.split("/");
+        
+        System.out.println(Arrays.toString(f));
+        var fin=f[2].trim().subSequence(2, 4);
+        
+        return f[0]+"/"+f[1]+"/"+fin;
     }
 }

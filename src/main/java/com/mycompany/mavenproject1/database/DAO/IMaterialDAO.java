@@ -16,6 +16,8 @@ public interface IMaterialDAO {
     public List<Material> readAll();
     public Boolean delete(String subpartida,String ruc);
     public Material readByCodigo(String codigo,String ruc);
+        public Material readByCodigo(String codigo);
+
     public Boolean update(Material material);
     public Boolean deleteAll();
     public Material readLike(String codigo,String ruc);

@@ -60,7 +60,7 @@ public class PdfUtils {
         for (var factura : facturas.entrySet()) {
 
             List<String> elementos=new ArrayList<>();
-            var fecha = factura.getValue().get(1);
+            var fecha = StringUtils.formatearFecha(factura.getValue().get(1));
             var numeroFactura = factura.getValue().get(17);
             var clienteRuc = cliente.getRuc();
             var ruta = factura.getKey();

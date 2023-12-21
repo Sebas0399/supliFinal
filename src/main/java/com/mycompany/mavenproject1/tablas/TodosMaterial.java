@@ -233,16 +233,16 @@ public class TodosMaterial extends javax.swing.JPanel {
             var option = JOptionPane.showConfirmDialog(null, "Se va a eliminar el material ");
             if (option == JOptionPane.YES_OPTION) {
 
-                String codigo = this.jTable3.getModel().getValueAt(row, 1).toString();
-                Cliente clienteTabla = (Cliente) this.jTable3.getModel().getValueAt(row, 0);
+                String codigo = jTable3.getModel().getValueAt(row, 1).toString();
+                Cliente clienteTabla = (Cliente) jTable3.getModel().getValueAt(row, 0);
 
                 mr.delete(codigo, clienteTabla.getRuc());
                 cargarDatos();
             }
 
         } else if (col == 11) {
-            Cliente cliente = (Cliente) this.jTable3.getValueAt(row, 0);
-            FormMaterial fr = new FormMaterial(this.jTable3.getValueAt(row, 1).toString(), cliente);
+            Cliente cliente = (Cliente) jTable3.getValueAt(row, 0);
+            FormMaterial fr = new FormMaterial(jTable3.getValueAt(row, 1).toString(), cliente);
             JDialog dialog = new JDialog();
             dialog.setTitle("Actualizar");
 

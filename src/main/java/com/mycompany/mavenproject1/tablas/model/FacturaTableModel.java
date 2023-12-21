@@ -4,6 +4,10 @@
  */
 package com.mycompany.mavenproject1.tablas.model;
 
+import javax.swing.DefaultCellEditor;
+import javax.swing.JTextField;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -12,7 +16,7 @@ import javax.swing.table.AbstractTableModel;
  */
 public class FacturaTableModel extends AbstractTableModel {
 
-    private String[] columnNames = {"Id","Cliente","No.","Fecha", "Cantidad", "Descripción insumo", "Producto terminado", "Unidad de medida", "Largo", "Ancho", "Modificar", "Eliminar"};
+    private String[] columnNames = {"Id", "Cliente", "No.", "Fecha", "Cantidad", "Descripción insumo", "Producto terminado", "Unidad de medida", "Largo", "Ancho", "Modificar", "Eliminar"};
     private Object[][] data;
 
     public FacturaTableModel(Object[][] data) {
@@ -21,7 +25,7 @@ public class FacturaTableModel extends AbstractTableModel {
     }
 
     public FacturaTableModel() {
-
+        this.data = new Object[0][columnNames.length];
     }
 
     @Override
@@ -29,8 +33,7 @@ public class FacturaTableModel extends AbstractTableModel {
         if (data != null) {
             return data.length;
 
-        }
-        else{
+        } else {
             return 0;
         }
     }
@@ -49,15 +52,14 @@ public class FacturaTableModel extends AbstractTableModel {
     public String getColumnName(int col) {
         return columnNames[col];
     }
+
     public void setData(Object[][] data) {
         this.data = data;
         fireTableDataChanged();
     }
 
     public void updateRow(int row, Object[] rowData) {
-        for (int col = 0; col < getColumnCount(); col++) {
-            data[row][col] = rowData[col];
-        }
+        System.arraycopy(rowData, 0, data[row], 0, getColumnCount());
         fireTableRowsUpdated(row, row);
     }
 
@@ -76,5 +78,17 @@ public class FacturaTableModel extends AbstractTableModel {
         data = newData;
         fireTableRowsDeleted(row, row);
     }
-   
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        return columnIndex == 1 || columnIndex == 2 || columnIndex == 3 || columnIndex == 4;
+    }
+
+    @Override
+    public void setValueAt(Object value, int row, int col) {
+        data[row][col] = value;
+        fireTableCellUpdated(row, col);
+    }
+
+    
 }

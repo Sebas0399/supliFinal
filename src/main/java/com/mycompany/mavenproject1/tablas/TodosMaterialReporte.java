@@ -212,7 +212,7 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
         JButton delete = new JButton();
         delete.setText("Eliminar");
         var materiales = mr.readAll();
-
+        
         Object[][] datos = new Object[materiales.size()][WIDTH];
         for (int i = 0; i < materiales.size(); i++) {
             MaterialReporte materiaPrima = materiales.get(i);

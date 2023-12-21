@@ -38,7 +38,7 @@ public class MaterialReporteDAO implements IMaterialReporteDAO {
         if (existingMaterial != null) {
             return false; // El material ya existe
         }
-
+        System.out.println("Material no encotrado"+material);
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.beginTransaction();
             session.persist(material);
@@ -84,7 +84,7 @@ public class MaterialReporteDAO implements IMaterialReporteDAO {
         try (Session session = sessionFactory.openSession()) {
             return session.createQuery("SELECT m FROM MaterialReporte m WHERE m.codigo = :codigo", MaterialReporte.class)
                     .setParameter("codigo", codigo)
-                    .uniqueResult();
+                    .getSingleResult();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

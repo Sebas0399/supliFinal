@@ -5,6 +5,7 @@
 package com.mycompany.mavenproject1.ui;
 
 import com.mycompany.mavenproject1.Constantes;
+import com.mycompany.mavenproject1.StringUtils;
 import com.mycompany.mavenproject1.database.DAO.ClienteDAO;
 import com.mycompany.mavenproject1.database.DAO.MaterialDAO;
 import com.mycompany.mavenproject1.database.model.Cliente;
@@ -18,16 +19,24 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
 
 /**
  *
@@ -50,6 +59,7 @@ public class FacturaPanel extends javax.swing.JPanel {
         FacturaTableModel facturaTableModel = new FacturaTableModel();
 
         tableFacturas.setModel(facturaTableModel);
+
         tableFacturas.setDefaultRenderer(Object.class, new RenderTable());
 
         cargarClientes();
@@ -145,7 +155,7 @@ public class FacturaPanel extends javax.swing.JPanel {
             List<List<String>> cabeceraFactura = new ArrayList<>();
             List<String> elementos = new ArrayList<>();
             System.out.println(factura);
-            var fecha = factura.getValue().get(1);
+            var fecha = StringUtils.formatearFecha(factura.getValue().get(1));
             var numeroFactura = factura.getValue().get(17);
             var clienteFactura = factura.getValue().get(0);
             cabeceraFactura.add(List.of(Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, clienteFactura, numeroFactura, fecha));
@@ -364,8 +374,7 @@ public class FacturaPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(46, 46, 46)
-                        .addComponent(jToggleButton1)
-                        .addGap(12, 12, 12))
+                        .addComponent(jToggleButton1))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(20, 20, 20)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -378,12 +387,13 @@ public class FacturaPanel extends javax.swing.JPanel {
                                         .addComponent(jLabel10))
                                     .addComponent(jLabel9))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(noFacturaTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(comboInsumos, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(cantidadTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(descripcionTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(idTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(idTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(noFacturaTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(comboInsumos, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(cantidadTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(descripcionTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabel6)
@@ -393,8 +403,8 @@ public class FacturaPanel extends javax.swing.JPanel {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(comboMedida, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(largoTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(anchoTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                                    .addComponent(anchoTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                .addGap(9, 9, 9)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE)
                 .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -426,13 +436,38 @@ public class FacturaPanel extends javax.swing.JPanel {
         // TODO add your handling code here:
         var col = tableFacturas.getSelectedColumn();
         var row = tableFacturas.getSelectedRow();
-
+        FacturaTableModel model = (FacturaTableModel) tableFacturas.getModel();
         if (col == 10) {
-            noFacturaTxt.setText((String) tableFacturas.getValueAt(row, 2));
-            idTxt.setText(String.valueOf(tableFacturas.getValueAt(row, 0)));
+            if (noFacturaTxt.getText() != null) {
+                noFacturaTxt.setText((String) tableFacturas.getValueAt(row, 2));
 
+            }
+            if (idTxt.getText() != null) {
+                idTxt.setText(String.valueOf(tableFacturas.getValueAt(row, 0)));
+
+            }
+            if (largoTxt.getText() != null) {
+                largoTxt.setText(String.valueOf(tableFacturas.getValueAt(row, 9)));
+
+            }
+            if (anchoTxt.getText() != null) {
+                anchoTxt.setText(String.valueOf(tableFacturas.getValueAt(row, 9)));
+
+            }
+          
+                 SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd/MM/yy");
+            try {
+                // Formatear la fecha en el nuevo formato
+                var fd=formatoDeseado.parse(String.valueOf(tableFacturas.getValueAt(row, 3)));
+                   dateChooser.setDate(fd);
+            } catch (ParseException ex) {
+                Logger.getLogger(FacturaPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+             
+
+            
         } else if (col == 11) {
-
+            model.removeRow(row);
         }
     }//GEN-LAST:event_tableFacturasMouseClicked
 
@@ -472,7 +507,7 @@ public class FacturaPanel extends javax.swing.JPanel {
                 idTxt.getText(),
                 datos.getValueAt(encontrado, 1),
                 noFacturaTxt.getText(),
-                datos.getValueAt(encontrado,3),
+                StringUtils.transformarFecha(dateChooser.getCalendar().getTime()),
                 cantidadTxt.getText(),
                 ((Material) comboInsumos.getSelectedItem()).getCodigo(),
                 descripcionTxt.getText(),
@@ -485,7 +520,26 @@ public class FacturaPanel extends javax.swing.JPanel {
             datos.updateRow(encontrado, rowData);
 
         } else {
-            datos.setValueAt(noFacturaTxt.getText(), rowCount + 1, 0);
+            JButton mod = new JButton();
+            mod.setText("Modificar");
+            JButton delete = new JButton();
+            delete.setText("Eliminar");
+            Object[] rowData = {
+                (rowCount - 1) + 1,
+                "",
+                noFacturaTxt.getText(),
+                StringUtils.transformarFecha(dateChooser.getCalendar().getTime()),
+                cantidadTxt.getText(),
+                ((Material) comboInsumos.getSelectedItem()).getCodigo(),
+                descripcionTxt.getText(),
+                comboMedida.getSelectedItem(),
+                largoTxt.getText(),
+                anchoTxt.getText(),
+                mod,
+                delete
+            };
+            datos.addRow(rowData);
+            //datos.setValueAt(noFacturaTxt.getText(), rowCount + 1, 0);
 
         }
 

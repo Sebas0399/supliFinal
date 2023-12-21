@@ -29,7 +29,6 @@ public class MaterialDAO implements IMaterialDAO {
     public Boolean create(Material material) {
         String codigo = material.getCodigo();
         var succes = false;
-
         Material existingMaterial = readByCodigo(codigo, material.getCliente().getRuc());
         if (existingMaterial != null) {
             return false;
@@ -129,8 +128,9 @@ public class MaterialDAO implements IMaterialDAO {
         var success = false;
         try {
             transaction = session.beginTransaction();
-            Material existingMaterial = readByCodigo(material.getCodigo(), material.getCliente().getRuc());
+                  
 
+            Material existingMaterial = readByCodigo(material.getCodigo());
             if (existingMaterial != null) {
                 // Comprobar si los nuevos valores son nulos antes de asignarlos
                 if (material.getSubpartida() != null) {
@@ -160,9 +160,10 @@ public class MaterialDAO implements IMaterialDAO {
                 if (material.getAplicaFormula() != null) {
                     existingMaterial.setAplicaFormula(material.getAplicaFormula());
                 }
-                if (material.getCliente() != null) {
+                
                     existingMaterial.setCliente(material.getCliente());
-                }
+                   
+
 
                 // ... Actualizar otros atributos según sea necesario ...
                 session.update(existingMaterial); // Actualizar el material en la base de datos
@@ -254,5 +255,31 @@ public class MaterialDAO implements IMaterialDAO {
         }
 
         return materiales;
+    }
+
+    @Override
+    public Material readByCodigo(String codigo) {
+         Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+        Material material;
+
+        try {
+            transaction = session.beginTransaction();
+            material = session.createQuery("SELECT m FROM Material m WHERE m.codigo = :codigo", Material.class)
+                    
+                    .setParameter("codigo", codigo)
+                    .getSingleResult();
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+
+            return null;
+        } finally {
+            session.close();
+        }
+
+        return material;
     }
 }
