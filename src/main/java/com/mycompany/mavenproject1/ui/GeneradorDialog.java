@@ -11,11 +11,14 @@ import com.mycompany.mavenproject1.database.DAO.MaterialDAO;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.model.Material;
 import com.mycompany.mavenproject1.utils.FileUtils;
+import java.awt.HeadlessException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -145,14 +148,23 @@ public class GeneradorDialog extends javax.swing.JPanel {
             }
             mapLista.put(listaDatos.get(2), listaDatos);
         }
-        System.out.println(mapLista);
         List<List<String>> lFinal = new ArrayList<>();
         for (var entr : mapLista.entrySet()) {
             var listaSub = entr.getValue();
             nameCliente = listaSub.get(1);
             lFinal.add(List.of(Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, listaSub.get(2), listaSub.get(3)));
         }
-        generarExcel(lFinal, FacturaPanel.cliente, nameCliente, ruta);
+
+        Collections.sort(lFinal, Comparator
+                .<List<Object>, Comparable>comparing(list -> (Comparable) ((List<Object>) list).get(4))
+                .thenComparing(list -> ((List<Object>) list).get(6)));
+
+        try {
+            generarExcel(lFinal, FacturaPanel.cliente, nameCliente, ruta);
+            JOptionPane.showMessageDialog(null, "Factura generada");
+        } catch (HeadlessException e) {
+
+        }
 
     }//GEN-LAST:event_generarFacturasActionPerformed
     public void generarExcel(List<List<String>> lFinal, Cliente empresa, String cliente, String path) {
@@ -242,7 +254,12 @@ public class GeneradorDialog extends javax.swing.JPanel {
             lFinal.add(List.of(lPeq.get(2), String.valueOf(numSerie), "1", Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, lPeq.get(6), "U", String.valueOf(lPeq.get(4))));
             numSerie++;
         }
-        generarExcelPT(lFinal, FacturaPanel.cliente, nameCliente, ruta);
+        try {
+            generarExcelPT(lFinal, FacturaPanel.cliente, nameCliente, ruta);
+            JOptionPane.showMessageDialog(null, "Producto Terminado generado");
+        } catch (Exception e) {
+
+        }
 
     }//GEN-LAST:event_generarProductoTerminadoActionPerformed
     public void generarExcelPT(List<List<String>> lFinal, Cliente empresa, String cliente, String path) {
@@ -395,7 +412,6 @@ public class GeneradorDialog extends javax.swing.JPanel {
                 ));
             }
         }
-        System.out.println(mapLista);
         List<List<String>> lFinal = new ArrayList<>();
 
         var numSerie = 1;
@@ -403,7 +419,6 @@ public class GeneradorDialog extends javax.swing.JPanel {
             var lPeq = e.getValue();
             nameCliente = lPeq.get(1);
             Material m = materialDAO.readByCodigo(lPeq.get(5), FacturaPanel.cliente.getRuc());
-            var transformado = new BigDecimal(lPeq.get(4)).round(new MathContext(3));
             lFinal.add(List.of(lPeq.get(2),
                     Constantes.SUBPARTIDA_FC,
                     Constantes.COMPLEMENTARIO_FC,
@@ -421,7 +436,13 @@ public class GeneradorDialog extends javax.swing.JPanel {
 
             numSerie++;
         }
-        generarExcelMP(lFinal, FacturaPanel.cliente, nameCliente, ruta);
+        try {
+            generarExcelMP(lFinal, FacturaPanel.cliente, nameCliente, ruta);
+            JOptionPane.showMessageDialog(null, "Material de Produccion generado ");
+
+        } catch (Exception e) {
+
+        }
 
     }//GEN-LAST:event_generarMediosProduccionActionPerformed
 

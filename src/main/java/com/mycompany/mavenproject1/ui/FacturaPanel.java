@@ -150,29 +150,35 @@ public class FacturaPanel extends javax.swing.JPanel {
 
         Map< List<List<String>>, List<List<String>>> map = new HashMap<>();
         var initContador = 34;
+
         for (var factura : facturas.entrySet()) {
             List<List<String>> elementosFactura = new ArrayList<>();
             List<List<String>> cabeceraFactura = new ArrayList<>();
             List<String> elementos = new ArrayList<>();
             System.out.println(factura);
-            var fecha = StringUtils.formatearFecha(factura.getValue().get(1));
-            var numeroFactura = factura.getValue().get(17);
-            var clienteFactura = factura.getValue().get(0);
-            cabeceraFactura.add(List.of(Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, clienteFactura, numeroFactura, fecha));
-            for (int i = initContador; i < factura.getValue().size(); i++) {
-                if (factura.getValue().get(i).trim().contains("SUBTOTAL")) {
-                    break;
-                } else {
-                    elementos.add(factura.getValue().get(i));
+            if (!factura.getValue().isEmpty()) {
+                var fecha = StringUtils.formatearFecha(factura.getValue().get(1));
+                var numeroFactura = factura.getValue().get(17);
+                var clienteFactura = factura.getValue().get(0);
+                cabeceraFactura.add(List.of(Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, clienteFactura, numeroFactura, fecha));
+                for (int i = initContador; i < factura.getValue().size(); i++) {
+                    if (factura.getValue().get(i).trim().contains("SUBTOTAL")) {
+                        break;
+                    } else {
+                        elementos.add(factura.getValue().get(i));
+                    }
                 }
+
+                // Imprimir los elementos
+                for (int i = 0; i < elementos.size() - 4; i++) {
+                    elementosFactura.add(List.of((elementos.get(i).split(" "))));
+
+                }
+                map.put(cabeceraFactura, elementosFactura);
+            } else {
+                JOptionPane.showMessageDialog(null, "Factura " + factura.getKey() + " no se puede leer");
             }
 
-            // Imprimir los elementos
-            for (int i = 0; i < elementos.size() - 4; i++) {
-                elementosFactura.add(List.of((elementos.get(i).split(" "))));
-
-            }
-            map.put(cabeceraFactura, elementosFactura);
         }
         return map;
 
@@ -327,13 +333,12 @@ public class FacturaPanel extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1151, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(idTxt, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
+                                    .addComponent(idTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(noFacturaTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(noFacturaTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel3))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -454,18 +459,16 @@ public class FacturaPanel extends javax.swing.JPanel {
                 anchoTxt.setText(String.valueOf(tableFacturas.getValueAt(row, 9)));
 
             }
-          
-                 SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd/MM/yy");
+
+            SimpleDateFormat formatoDeseado = new SimpleDateFormat("dd/MM/yy");
             try {
                 // Formatear la fecha en el nuevo formato
-                var fd=formatoDeseado.parse(String.valueOf(tableFacturas.getValueAt(row, 3)));
-                   dateChooser.setDate(fd);
+                var fd = formatoDeseado.parse(String.valueOf(tableFacturas.getValueAt(row, 3)));
+                dateChooser.setDate(fd);
             } catch (ParseException ex) {
                 Logger.getLogger(FacturaPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
-             
 
-            
         } else if (col == 11) {
             model.removeRow(row);
         }
@@ -501,50 +504,59 @@ public class FacturaPanel extends javax.swing.JPanel {
         FacturaTableModel datos = (FacturaTableModel) tableFacturas.getModel();
         int rowCount = datos.getRowCount();
         int encontrado = buscarElemento(noFacturaTxt.getText(), String.valueOf(idTxt.getText()));
+        if (validarTexto()) {
+            if (encontrado >= 0) {
+                Object[] rowData = {
+                    idTxt.getText(),
+                    datos.getValueAt(encontrado, 1),
+                    noFacturaTxt.getText(),
+                    StringUtils.transformarFecha(dateChooser.getCalendar().getTime()),
+                    cantidadTxt.getText(),
+                    ((Material) comboInsumos.getSelectedItem()).getCodigo(),
+                    descripcionTxt.getText(),
+                    comboMedida.getSelectedItem(),
+                    largoTxt.getText(),
+                    anchoTxt.getText(),
+                    datos.getValueAt(encontrado, 10),
+                    datos.getValueAt(encontrado, 11)
+                };
+                datos.updateRow(encontrado, rowData);
 
-        if (encontrado >= 0) {
-            Object[] rowData = {
-                idTxt.getText(),
-                datos.getValueAt(encontrado, 1),
-                noFacturaTxt.getText(),
-                StringUtils.transformarFecha(dateChooser.getCalendar().getTime()),
-                cantidadTxt.getText(),
-                ((Material) comboInsumos.getSelectedItem()).getCodigo(),
-                descripcionTxt.getText(),
-                comboMedida.getSelectedItem(),
-                largoTxt.getText(),
-                anchoTxt.getText(),
-                datos.getValueAt(encontrado, 10),
-                datos.getValueAt(encontrado, 11)
-            };
-            datos.updateRow(encontrado, rowData);
-
-        } else {
-            JButton mod = new JButton();
-            mod.setText("Modificar");
-            JButton delete = new JButton();
-            delete.setText("Eliminar");
-            Object[] rowData = {
-                (rowCount - 1) + 1,
-                "",
-                noFacturaTxt.getText(),
-                StringUtils.transformarFecha(dateChooser.getCalendar().getTime()),
-                cantidadTxt.getText(),
-                ((Material) comboInsumos.getSelectedItem()).getCodigo(),
-                descripcionTxt.getText(),
-                comboMedida.getSelectedItem(),
-                largoTxt.getText(),
-                anchoTxt.getText(),
-                mod,
-                delete
-            };
-            datos.addRow(rowData);
-            //datos.setValueAt(noFacturaTxt.getText(), rowCount + 1, 0);
-
+            } else {
+                JButton mod = new JButton();
+                mod.setText("Modificar");
+                JButton delete = new JButton();
+                delete.setText("Eliminar");
+                Object[] rowData = {
+                    (rowCount - 1) + 1,
+                    "",
+                    noFacturaTxt.getText(),
+                    StringUtils.transformarFecha(dateChooser.getCalendar().getTime()),
+                    cantidadTxt.getText(),
+                    ((Material) comboInsumos.getSelectedItem()).getCodigo(),
+                    descripcionTxt.getText(),
+                    comboMedida.getSelectedItem(),
+                    largoTxt.getText(),
+                    anchoTxt.getText(),
+                    mod,
+                    delete
+                };
+                datos.addRow(rowData);
+            }
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "Rellene todos los campos");
         }
 
-    }//GEN-LAST:event_jToggleButton1ActionPerformed
 
+    }//GEN-LAST:event_jToggleButton1ActionPerformed
+    private boolean validarTexto() {
+        return !(cantidadTxt.getText().isEmpty() 
+                || noFacturaTxt.getText().isEmpty() 
+                || largoTxt.getText().isEmpty() 
+                || anchoTxt.getText().isEmpty() 
+                || dateChooser.getCalendar() == null);
+    }
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         JDialog dialog = new JDialog();

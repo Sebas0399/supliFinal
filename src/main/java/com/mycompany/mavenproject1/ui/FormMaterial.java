@@ -44,8 +44,6 @@ public class FormMaterial extends javax.swing.JPanel {
 
     public FormMaterial(String codigo,Cliente cliente) {
         initComponents();
-        //txtPDesperdicio.setEnabled(false);
-
         this.setBackground(Color.LIGHT_GRAY);
         this.btnGuardar.setText("Actualizar");
         cargarDatos();
@@ -70,7 +68,7 @@ public class FormMaterial extends javax.swing.JPanel {
 
         this.clientes = cr.readAll();
         this.clientes.stream().forEach(x -> this.comboCliente.addItem(x));
-
+        this.cliente=(Cliente) this.comboCliente.getSelectedItem();
     }
 
     /**

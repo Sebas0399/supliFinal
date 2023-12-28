@@ -165,7 +165,6 @@ public class MPGenerador {
                 List<List<String>> valoreFin = new ArrayList<>();
                 Map<List<String>, List<String>> elemtentosFactura = new HashMap<>();
 
-                System.out.println(valore);
                 for (var l : valore) {
 
                     if (elemtentosFactura.containsKey(List.of(l.get(0), l.get(6)))) {
