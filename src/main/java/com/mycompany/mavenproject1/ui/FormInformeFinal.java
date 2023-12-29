@@ -65,7 +65,13 @@ public class FormInformeFinal extends javax.swing.JPanel {
                     Cargando c = new Cargando("Generando");
                     c.setVisible(true);
                     InformeClientesUtils ifu = new InformeClientesUtils(FileUtils.saveDataOne("Guardar Reporte De Clientes"), cliente);
-                    ifu.generarInforme(inicio, quitarHora(fin));
+
+                    if (cliente.getNombre().contains("CRA")) {
+                        ifu.generarInforme(inicio, quitarHora(fin));
+                    } else {
+                        ifu.generarInforme(inicio, quitarHora(fin),true);
+                    }
+
                     c.dispose();
                 };
                 Thread miHilo = new Thread(mRunnable);
@@ -74,8 +80,7 @@ public class FormInformeFinal extends javax.swing.JPanel {
                 window.dispose();
             });
 
-        } 
-         else {
+        } else {
             filterButton.addActionListener((ActionEvent e) -> {
                 Date inicio = dateChooser.getDate();
 

@@ -282,4 +282,26 @@ public class MaterialDAO implements IMaterialDAO {
 
         return material;
     }
+
+    @Override
+    public Boolean deleteAllCliente(String ruc) {
+         Session session = sessionFactory.openSession();
+        Transaction transaction = null;
+
+        try {
+            transaction = session.beginTransaction();
+            Query query = session.createQuery("DELETE FROM Material m WHERE m.cliente.ruc=:ruc");
+            query.setParameter("ruc", ruc);
+            int deletedCount = query.executeUpdate();
+            transaction.commit();
+            return deletedCount > 0;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            return false;
+        } finally {
+            session.close();
+        }
+    }
 }

@@ -12,6 +12,7 @@ import com.mycompany.mavenproject1.database.DAO.MaterialReporteDAO;
 import com.mycompany.mavenproject1.database.DAO.ReporteDAO;
 import com.mycompany.mavenproject1.database.model.Cliente;
 import com.mycompany.mavenproject1.database.model.Reporte;
+import com.mycompany.mavenproject1.ui.FacturaPanel;
 import java.awt.Window;
 
 import java.io.File;
@@ -130,7 +131,7 @@ public class InformeClientesUtils {
                     i++;
                     elem = factura.get(i);
                 }
-                if (si&&elem!=null) {
+                if (si && elem != null) {
 
                     if (elem.size() > 7) {
                         var codigo = String.valueOf((int) Double.parseDouble(elem.get(1)));
@@ -238,15 +239,13 @@ public class InformeClientesUtils {
         generarExcelFinal(lFinal);
     }
 
-    
-
     private void generarExcelFinal(List<List<String>> lFinal) {
         Workbook workbook = new HSSFWorkbook();
         Sheet sheet = workbook.createSheet();
         Map<String, List<String>> listaFactura = new HashMap<>();
         //List<List<String>> lFinal = new ArrayList<>();
         List<List<String>> cabeceras = List.of(
-                List.of("CLIENTE", "No. FACTURA", "FECHA FACTURA", "SUBPARTIDA ARANCELARIA P. TERMINADO", "DESCRIPCIÓN P. TERMINADO", "TIPO UNIDAD", "CANTIDAD ELABORADA","CONTIENE MATERIAL")
+                List.of("CLIENTE", "No. FACTURA", "FECHA FACTURA", "SUBPARTIDA ARANCELARIA P. TERMINADO", "DESCRIPCIÓN P. TERMINADO", "TIPO UNIDAD", "CANTIDAD ELABORADA", "CONTIENE MATERIAL")
         );
 
         int rowNumber = 0;
@@ -274,10 +273,10 @@ public class InformeClientesUtils {
                 r.createCell(k++).setCellValue(j);
             }*/
         }
-        var listaOrdenada=new ArrayList<>(listaFactura.entrySet());
-        listaOrdenada.sort(Comparator.comparing(entry->entry.getValue().get(0)));
-        Map<String,List<String>> listaFinalOrdenada=new LinkedHashMap<>();
-        for(Map.Entry<String,List<String>> entry:listaOrdenada){
+        var listaOrdenada = new ArrayList<>(listaFactura.entrySet());
+        listaOrdenada.sort(Comparator.comparing(entry -> entry.getValue().get(0)));
+        Map<String, List<String>> listaFinalOrdenada = new LinkedHashMap<>();
+        for (Map.Entry<String, List<String>> entry : listaOrdenada) {
             listaFinalOrdenada.put(entry.getKey(), entry.getValue());
         }
         for (Map.Entry<String, List<String>> x : listaFinalOrdenada.entrySet()) {
@@ -290,9 +289,9 @@ public class InformeClientesUtils {
 
         String fileLocation = this.ruta + ".xls";
         try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
-      
+
             workbook.write(outputStream);
-            
+
             JOptionPane.showMessageDialog(null, "Informe Final Generado");
         } catch (IOException ex) {
             Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
@@ -313,5 +312,36 @@ public class InformeClientesUtils {
         double numeroComoDouble = Double.parseDouble(num);
         int parteEntera = (int) numeroComoDouble;
         return String.valueOf(parteEntera);
+    }
+
+    //MEGASTOCK
+    public void generarInforme(Date inicio, Date fin, boolean m) {
+        var tabla = FacturaPanel.tableFacturas.getModel();
+        var rowCount = tabla.getRowCount();
+        var colCount = tabla.getColumnCount();
+        System.out.println("Filas");
+        System.out.println(rowCount);
+        System.out.println("Columnas");
+        System.out.println(colCount);
+        //CLIENTE,No. FACTURA,FECHA 
+        //FACTURA,SUBPARTIDA ARANCELARIA P. TERMINADO,DESCRIPCIÓN P. 
+        //TERMINADO,TIPO UNIDAD,CANTIDAD ELABORADA
+
+        List<List<String>> data = new ArrayList<>();
+        for (int i = 0; i < rowCount; i++) {
+            List<String> peq = new ArrayList<>();
+            peq.add((String) tabla.getValueAt(i, 1));
+            peq.add((String) tabla.getValueAt(i, 2));
+            peq.add((String) tabla.getValueAt(i, 3));
+            
+            peq.add("Subapartida");
+            peq.add("Descripcion");
+            peq.add("tipo unidad");
+            peq.add("cantidad elaborada");
+
+           
+            data.add(peq);
+        }
+        System.out.println(data);
     }
 }

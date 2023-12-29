@@ -288,7 +288,7 @@ public class EntradaPanel extends javax.swing.JPanel {
 
             getPaths().put("IN", path);
             InsumosUtils insumosUtils = new InsumosUtils(paths, (Cliente) comboCliente.getSelectedItem());
-            insumosUtils.saveAllInsumos();
+            insumosUtils.saveAllInsumos(cliente.getRuc());
             TodosMaterial.cargarDatos();
             Reporte reporte = reporteDAO.read();
             if (reporte != null) {
@@ -338,6 +338,7 @@ public class EntradaPanel extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(null, "Cargue el reporte de produccion");
 
         } else {
+            
             JDialog dialog = new JDialog();
             dialog.setTitle("Generar Reporte De Cliente");
             dialog.getContentPane().add(new FormInformeFinal(cliente, "cliente"));

@@ -94,9 +94,10 @@ public class InsumosUtils {
 
     }
 
-    public Boolean saveAllInsumos() {
+    public Boolean saveAllInsumos(String ruc) {
         List<Map<Integer, List<String>>> archivoGeneral = this.convertirInsumos();
-        materialDAO.deleteAll();
+        //materialDAO.deleteAll();
+        materialDAO.deleteAllCliente(ruc);
         for (var hoja : archivoGeneral) {
             for (int i = 2; i < hoja.size(); i++) {
                 var fila = hoja.get(i);
