@@ -117,22 +117,20 @@ public class FacturaPanel extends javax.swing.JPanel {
         for (var item : items.entrySet()) {
             for (var itemPeq : item.getValue()) {
                 var lenItems = itemPeq.size();
-                if (lenItems == 10) {
+                if (lenItems != 10) {
 
                     datos[contadorItems] = new Object[]{contadorItems,
                         item.getKey().get(0).get(3),
                         item.getKey().get(0).get(4),
                         item.getKey().get(0).get(5),
-                        itemPeq.get(1), "", "", "", "", "", mod, delete
+                        "", "", "", "", "", "", mod, delete
                     };
                 } else {
-                    var data = itemPeq.get(0).split(" ");
-                    System.out.println(Arrays.toString(data));
                     datos[contadorItems] = new Object[]{contadorItems,
                         item.getKey().get(0).get(3),
                         item.getKey().get(0).get(4),
                         item.getKey().get(0).get(5),
-                        data[data.length - 1], "", "", "", "", "", mod, delete
+                        "", "", "", "", "", "", mod, delete
                     };
                 }
 
@@ -155,7 +153,6 @@ public class FacturaPanel extends javax.swing.JPanel {
             List<List<String>> elementosFactura = new ArrayList<>();
             List<List<String>> cabeceraFactura = new ArrayList<>();
             List<String> elementos = new ArrayList<>();
-            System.out.println(factura);
             if (!factura.getValue().isEmpty()) {
                 var fecha = StringUtils.formatearFecha(factura.getValue().get(1));
                 var numeroFactura = factura.getValue().get(17);
@@ -443,6 +440,10 @@ public class FacturaPanel extends javax.swing.JPanel {
         var row = tableFacturas.getSelectedRow();
         FacturaTableModel model = (FacturaTableModel) tableFacturas.getModel();
         if (col == 10) {
+            if (cantidadTxt.getText() != null) {
+                cantidadTxt.setText((String) tableFacturas.getValueAt(row, 4));
+
+            }
             if (noFacturaTxt.getText() != null) {
                 noFacturaTxt.setText((String) tableFacturas.getValueAt(row, 2));
 
@@ -452,7 +453,7 @@ public class FacturaPanel extends javax.swing.JPanel {
 
             }
             if (largoTxt.getText() != null) {
-                largoTxt.setText(String.valueOf(tableFacturas.getValueAt(row, 9)));
+                largoTxt.setText(String.valueOf(tableFacturas.getValueAt(row, 8)));
 
             }
             if (anchoTxt.getText() != null) {
@@ -521,6 +522,7 @@ public class FacturaPanel extends javax.swing.JPanel {
                     datos.getValueAt(encontrado, 11)
                 };
                 datos.updateRow(encontrado, rowData);
+                limpiarInput();
 
             } else {
                 JButton mod = new JButton();
@@ -542,20 +544,28 @@ public class FacturaPanel extends javax.swing.JPanel {
                     delete
                 };
                 datos.addRow(rowData);
+                limpiarInput();
             }
-        }
-        else{
+        } else {
             JOptionPane.showMessageDialog(null, "Rellene todos los campos");
         }
 
 
     }//GEN-LAST:event_jToggleButton1ActionPerformed
     private boolean validarTexto() {
-        return !(cantidadTxt.getText().isEmpty() 
-                || noFacturaTxt.getText().isEmpty() 
-                || largoTxt.getText().isEmpty() 
-                || anchoTxt.getText().isEmpty() 
+        return !(cantidadTxt.getText().isEmpty()
+                || noFacturaTxt.getText().isEmpty()
+                || largoTxt.getText().isEmpty()
+                || anchoTxt.getText().isEmpty()
                 || dateChooser.getCalendar() == null);
+    }
+
+    private void limpiarInput() {
+        cantidadTxt.setText(null);
+        noFacturaTxt.setText(null);
+        largoTxt.setText(null);
+        anchoTxt.setText(null);
+        dateChooser.setCalendar(null);
     }
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:

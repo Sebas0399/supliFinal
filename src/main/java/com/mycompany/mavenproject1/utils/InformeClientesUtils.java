@@ -273,6 +273,7 @@ public class InformeClientesUtils {
                 r.createCell(k++).setCellValue(j);
             }*/
         }
+        System.out.println(listaFactura);
         var listaOrdenada = new ArrayList<>(listaFactura.entrySet());
         listaOrdenada.sort(Comparator.comparing(entry -> entry.getValue().get(0)));
         Map<String, List<String>> listaFinalOrdenada = new LinkedHashMap<>();
@@ -336,12 +337,12 @@ public class InformeClientesUtils {
             
             peq.add("Subapartida");
             peq.add("Descripcion");
-            peq.add("tipo unidad");
-            peq.add("cantidad elaborada");
-
+            peq.add((String) tabla.getValueAt(i, 7));
+            peq.add((String) tabla.getValueAt(i, 4));
+            peq.add("");
            
             data.add(peq);
         }
-        System.out.println(data);
+        generarExcelFinal(data);
     }
 }
