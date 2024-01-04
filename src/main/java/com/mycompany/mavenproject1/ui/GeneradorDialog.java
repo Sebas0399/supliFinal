@@ -139,7 +139,6 @@ public class GeneradorDialog extends javax.swing.JPanel {
         Map<String, List<String>> mapLista = new HashMap<>();
         var rowCount = datos.getRowCount();
         var colCount = datos.getColumnCount();
-        var nameCliente = "";
         for (var row = 0; row < rowCount; row++) {
             List<String> listaDatos = new ArrayList<>();
 
@@ -148,14 +147,28 @@ public class GeneradorDialog extends javax.swing.JPanel {
             }
             mapLista.put(listaDatos.get(2), listaDatos);
         }
-        List<List<String>> lFinal = new ArrayList<>();
-        for (var entr : mapLista.entrySet()) {
-            var listaSub = entr.getValue();
-            nameCliente = listaSub.get(1);
-            lFinal.add(List.of(Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, listaSub.get(2), listaSub.get(3)));
+        var nombres = obtenerNombresClientes(mapLista);
+        for (var nombre : nombres) {
+            
+                var lFinal = new ArrayList<>();
+                for (var ent : mapLista.entrySet()) {
+
+                    var listaSub = ent.getValue();
+                    var nameCliente = listaSub.get(1).toString();
+                    var numFactura = listaSub.get(2).toString();
+
+                    //List.of(Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, numFactura, listaSub.get(3));
+                    if (nombre.contains(nameCliente)) {
+                        lFinal.add(List.of(Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, listaSub.get(2), listaSub.get(3)));
+                       // mapLista.remove(numFactura);
+                    }
+
+                }
+                System.out.println(lFinal);
+            
         }
 
-        Collections.sort(lFinal, Comparator
+        /*Collections.sort(lFinal, Comparator
                 .<List<Object>, Comparable>comparing(list -> (Comparable) ((List<Object>) list).get(4))
                 .thenComparing(list -> ((List<Object>) list).get(6)));
 
@@ -164,9 +177,19 @@ public class GeneradorDialog extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(null, "Factura generada");
         } catch (HeadlessException e) {
 
-        }
+        }*/
 
     }//GEN-LAST:event_generarFacturasActionPerformed
+    public List<String> obtenerNombresClientes(Map<String, List<String>> mapLista) {
+        List<String> nombres = new ArrayList<>();
+        for (var lista : mapLista.entrySet()) {
+            if (!nombres.contains(lista.getValue().get(1))) {
+                nombres.add(lista.getValue().get(1));
+            }
+        }
+        return nombres;
+    }
+
     public void generarExcel(List<List<String>> lFinal, Cliente empresa, String cliente, String path) {
 
         Workbook workbook = new HSSFWorkbook();

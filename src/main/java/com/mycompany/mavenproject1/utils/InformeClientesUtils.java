@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import static org.apache.poi.ss.usermodel.CellType.BOOLEAN;
@@ -57,12 +56,14 @@ public class InformeClientesUtils {
     private Cliente cliente;
     private ReporteDAO reporteDAO;
     private MaterialReporteDAO materialReporteDAO;
+    private MaterialDAO materialDAO;
 
     public InformeClientesUtils(String ruta, Cliente cliente) {
         this.ruta = ruta;
         this.cliente = cliente;
         this.reporteDAO = new ReporteDAO(HibernateUtil.getSessionFactory());
         this.materialReporteDAO = new MaterialReporteDAO(HibernateUtil.getSessionFactory());
+        this.materialDAO=new MaterialDAO();
 
     }
 
@@ -257,21 +258,20 @@ public class InformeClientesUtils {
         }
 
         for (List<String> x : lFinal) {
-            //Double valorActual=Double.valueOf(x.get(5));
             if (listaFactura.get(x.get(1)) != null) {
                 Integer sumaActual = Integer.valueOf(listaFactura.get(x.get(1)).get(6)); // Cambiado a índice 5 para obtener el sexto elemento (x.get(5)).
                 Integer nuevaSuma = sumaActual + Integer.valueOf(x.get(6));
-                listaFactura.put(x.get(1), List.of(x.get(0), x.get(1), x.get(2), x.get(3), x.get(4), x.get(5), nuevaSuma.toString(), x.get(6))); // Convertido nuevaSuma a String antes de ponerlo en la lista.
+                if (x.get(7).isEmpty()) {
+                    listaFactura.put(x.get(1), List.of(x.get(0), x.get(1), x.get(2), x.get(3), x.get(4), x.get(5), nuevaSuma.toString(), ""));
+
+                } else {
+                    listaFactura.put(x.get(1), List.of(x.get(0), x.get(1), x.get(2), x.get(3), x.get(4), x.get(5), nuevaSuma.toString(), x.get(6)));
+
+                }
             } else {
                 listaFactura.put(x.get(1), List.of(x.get(0), x.get(1), x.get(2), x.get(3), x.get(4), x.get(5), x.get(6), x.get(7)));
             }
 
-            //listaFactura.put(x.get(1), x);
-            /* Row r = sheet.createRow(rowNumber++);
-            int k = 0;
-            for (String j : x) {
-                r.createCell(k++).setCellValue(j);
-            }*/
         }
         System.out.println(listaFactura);
         var listaOrdenada = new ArrayList<>(listaFactura.entrySet());
@@ -319,28 +319,20 @@ public class InformeClientesUtils {
     public void generarInforme(Date inicio, Date fin, boolean m) {
         var tabla = FacturaPanel.tableFacturas.getModel();
         var rowCount = tabla.getRowCount();
-        var colCount = tabla.getColumnCount();
-        System.out.println("Filas");
-        System.out.println(rowCount);
-        System.out.println("Columnas");
-        System.out.println(colCount);
-        //CLIENTE,No. FACTURA,FECHA 
-        //FACTURA,SUBPARTIDA ARANCELARIA P. TERMINADO,DESCRIPCIÓN P. 
-        //TERMINADO,TIPO UNIDAD,CANTIDAD ELABORADA
-
+        
         List<List<String>> data = new ArrayList<>();
+            
         for (int i = 0; i < rowCount; i++) {
             List<String> peq = new ArrayList<>();
             peq.add((String) tabla.getValueAt(i, 1));
             peq.add((String) tabla.getValueAt(i, 2));
             peq.add((String) tabla.getValueAt(i, 3));
-            
-            peq.add("Subapartida");
-            peq.add("Descripcion");
-            peq.add((String) tabla.getValueAt(i, 7));
+            peq.add(Constantes.SUBPARTIDA_FC);
+            peq.add((String) tabla.getValueAt(i, 6));
+            peq.add("U");
             peq.add((String) tabla.getValueAt(i, 4));
             peq.add("");
-           
+
             data.add(peq);
         }
         generarExcelFinal(data);

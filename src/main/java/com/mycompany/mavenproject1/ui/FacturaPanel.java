@@ -23,6 +23,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +38,8 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -59,6 +62,8 @@ public class FacturaPanel extends javax.swing.JPanel {
         FacturaTableModel facturaTableModel = new FacturaTableModel();
 
         tableFacturas.setModel(facturaTableModel);
+         // Configuración del ordenamiento por columnas
+        
 
         tableFacturas.setDefaultRenderer(Object.class, new RenderTable());
 
@@ -104,16 +109,13 @@ public class FacturaPanel extends javax.swing.JPanel {
     }
 
     public void actualizarTabla(Map< List<List<String>>, List<List<String>>> items) {
-        var totalItems
-                = (contarTotalValores(items));
-
+        var totalItems = (contarTotalValores(items));
         Object[][] datos = new Object[totalItems][9];
         JButton mod = new JButton();
         mod.setText("Modificar");
         JButton delete = new JButton();
         delete.setText("Eliminar");
         var contadorItems = 0;
-        System.out.println(items);
         for (var item : items.entrySet()) {
             for (var itemPeq : item.getValue()) {
                 var lenItems = itemPeq.size();
@@ -136,11 +138,13 @@ public class FacturaPanel extends javax.swing.JPanel {
 
                 contadorItems++;
             }
-
         }
-
+        Arrays.sort(datos, Comparator.comparing(o -> ((Comparable) o[1])));
         FacturaTableModel facturaTableModel = new FacturaTableModel(datos);
         tableFacturas.setModel(facturaTableModel);
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(tableFacturas.getModel());
+        tableFacturas.setRowSorter(sorter);
+        sorter.setSortsOnUpdates(true);
 
     }
 
