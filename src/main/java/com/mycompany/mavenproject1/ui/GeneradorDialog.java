@@ -148,36 +148,31 @@ public class GeneradorDialog extends javax.swing.JPanel {
             mapLista.put(listaDatos.get(2), listaDatos);
         }
         var nombres = obtenerNombresClientes(mapLista);
+
         for (var nombre : nombres) {
-            
-                var lFinal = new ArrayList<>();
-                for (var ent : mapLista.entrySet()) {
+            List<List<String>> lFinal = new ArrayList<>();
+            for (var ent : mapLista.entrySet()) {
 
-                    var listaSub = ent.getValue();
-                    var nameCliente = listaSub.get(1).toString();
-                    var numFactura = listaSub.get(2).toString();
+                var listaSub = ent.getValue();
+                var nameCliente = listaSub.get(1);
 
-                    //List.of(Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, numFactura, listaSub.get(3));
-                    if (nombre.contains(nameCliente)) {
-                        lFinal.add(List.of(Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, listaSub.get(2), listaSub.get(3)));
-                       // mapLista.remove(numFactura);
-                    }
-
+                if (nombre.contains(nameCliente)) {
+                    lFinal.add(List.of(Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, listaSub.get(2), listaSub.get(3)));
                 }
-                System.out.println(lFinal);
-            
+
+            }
+            Collections.sort(lFinal, Comparator
+                    .<List<Object>, Comparable>comparing(list -> (Comparable) ((List<Object>) list).get(4))
+                    .thenComparing(list -> ((List<Object>) list).get(6)));
+            try {
+                generarExcel(lFinal, FacturaPanel.cliente, nombre, ruta);
+                JOptionPane.showMessageDialog(null, "Factura generada");
+            } catch (HeadlessException e) {
+
+            }
+
         }
 
-        /*Collections.sort(lFinal, Comparator
-                .<List<Object>, Comparable>comparing(list -> (Comparable) ((List<Object>) list).get(4))
-                .thenComparing(list -> ((List<Object>) list).get(6)));
-
-        try {
-            generarExcel(lFinal, FacturaPanel.cliente, nameCliente, ruta);
-            JOptionPane.showMessageDialog(null, "Factura generada");
-        } catch (HeadlessException e) {
-
-        }*/
 
     }//GEN-LAST:event_generarFacturasActionPerformed
     public List<String> obtenerNombresClientes(Map<String, List<String>> mapLista) {
@@ -239,9 +234,11 @@ public class GeneradorDialog extends javax.swing.JPanel {
         var ruta = FileUtils.saveData("Guardar Producto Terminado");
 
         Map<String, List<String>> mapLista = new HashMap<>();
+
         var rowCount = datos.getRowCount();
         var colCount = datos.getColumnCount();
         var nameCliente = "";
+
         for (var row = 0; row < rowCount; row++) {
             List<String> listaDatos = new ArrayList<>();
 
@@ -255,7 +252,7 @@ public class GeneradorDialog extends javax.swing.JPanel {
                         listaDatos.get(1),
                         listaDatos.get(2),
                         listaDatos.get(3),
-                        String.valueOf(sumaVal),
+                        String.valueOf((int)sumaVal),
                         listaDatos.get(5),
                         listaDatos.get(6),
                         listaDatos.get(7),
@@ -269,20 +266,30 @@ public class GeneradorDialog extends javax.swing.JPanel {
 
             }
         }
-        List<List<String>> lFinal = new ArrayList<>();
-        var numSerie = 1;
-        for (var e : mapLista.entrySet()) {
-            var lPeq = e.getValue();
-            nameCliente = lPeq.get(1);
-            lFinal.add(List.of(lPeq.get(2), String.valueOf(numSerie), "1", Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, lPeq.get(6), "U", String.valueOf(lPeq.get(4))));
-            numSerie++;
-        }
-        try {
-            generarExcelPT(lFinal, FacturaPanel.cliente, nameCliente, ruta);
-            JOptionPane.showMessageDialog(null, "Producto Terminado generado");
-        } catch (Exception e) {
+        var nombres = obtenerNombresClientes(mapLista);
+
+        for (var nombre : nombres) {
+            List<List<String>> lFinal = new ArrayList<>();
+            var numSerie = 1;
+            for (var e : mapLista.entrySet()) {
+                var lPeq = e.getValue();
+                nameCliente = lPeq.get(1);
+              
+                if (nameCliente.contains(nombre)) {
+                    lFinal.add(List.of(lPeq.get(2), String.valueOf(numSerie), "1", Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, lPeq.get(6), "U", String.valueOf(lPeq.get(4))));
+                    numSerie++;
+                }
+
+            }
+            try {
+                generarExcelPT(lFinal, FacturaPanel.cliente, nombre, ruta);
+                JOptionPane.showMessageDialog(null, "Producto Terminado generado");
+            } catch (Exception e) {
+
+            }
 
         }
+
 
     }//GEN-LAST:event_generarProductoTerminadoActionPerformed
     public void generarExcelPT(List<List<String>> lFinal, Cliente empresa, String cliente, String path) {
