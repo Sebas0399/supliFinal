@@ -252,7 +252,7 @@ public class GeneradorDialog extends javax.swing.JPanel {
                         listaDatos.get(1),
                         listaDatos.get(2),
                         listaDatos.get(3),
-                        String.valueOf((int)sumaVal),
+                        String.valueOf((int) sumaVal),
                         listaDatos.get(5),
                         listaDatos.get(6),
                         listaDatos.get(7),
@@ -274,7 +274,7 @@ public class GeneradorDialog extends javax.swing.JPanel {
             for (var e : mapLista.entrySet()) {
                 var lPeq = e.getValue();
                 nameCliente = lPeq.get(1);
-              
+
                 if (nameCliente.contains(nombre)) {
                     lFinal.add(List.of(lPeq.get(2), String.valueOf(numSerie), "1", Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, lPeq.get(6), "U", String.valueOf(lPeq.get(4))));
                     numSerie++;
@@ -442,37 +442,45 @@ public class GeneradorDialog extends javax.swing.JPanel {
                 ));
             }
         }
-        List<List<String>> lFinal = new ArrayList<>();
+        var nombres = obtenerNombresClientes(mapLista);
 
-        var numSerie = 1;
-        for (var e : mapLista.entrySet()) {
-            var lPeq = e.getValue();
-            nameCliente = lPeq.get(1);
-            Material m = materialDAO.readByCodigo(lPeq.get(5), FacturaPanel.cliente.getRuc());
-            lFinal.add(List.of(lPeq.get(2),
-                    Constantes.SUBPARTIDA_FC,
-                    Constantes.COMPLEMENTARIO_FC,
-                    Constantes.SUPLEMENTARIO_FC,
-                    String.valueOf(numSerie),
-                    "1", m.getCodigo(),
-                    m.getSubpartida().split("-")[0],
-                    "0000", "0000",
-                    m.getDescripcion(),
-                    m.getTipoUnidad(),
-                    String.valueOf(lPeq.get(4)),
-                    "0",
-                    String.valueOf(new BigDecimal(lPeq.get(4)).multiply(m.getPorcentajeMerma()).round(new MathContext(3)))
-            ));
+        for (var nombre : nombres) {
+            List<List<String>> lFinal = new ArrayList<>();
 
-            numSerie++;
+            var numSerie = 1;
+            for (var e : mapLista.entrySet()) {
+                var lPeq = e.getValue();
+                nameCliente = lPeq.get(1);
+                if (nameCliente.contains(nombre)) {
+                    Material m = materialDAO.readByCodigo(lPeq.get(5), FacturaPanel.cliente.getRuc());
+                    lFinal.add(List.of(lPeq.get(2),
+                            Constantes.SUBPARTIDA_FC,
+                            Constantes.COMPLEMENTARIO_FC,
+                            Constantes.SUPLEMENTARIO_FC,
+                            String.valueOf(numSerie),
+                            "1", m.getCodigo(),
+                            m.getSubpartida().split("-")[0],
+                            "0000", "0000",
+                            m.getDescripcion(),
+                            m.getTipoUnidad(),
+                            String.valueOf(lPeq.get(4)),
+                            "0",
+                            String.valueOf(new BigDecimal(lPeq.get(4)).multiply(m.getPorcentajeMerma()).round(new MathContext(3)))
+                    ));
+
+                    numSerie++;
+                }
+
+            }
+            try {
+                generarExcelMP(lFinal, FacturaPanel.cliente, nombre, ruta);
+                JOptionPane.showMessageDialog(null, "Material de Produccion generado ");
+
+            } catch (Exception e) {
+
+            }
         }
-        try {
-            generarExcelMP(lFinal, FacturaPanel.cliente, nameCliente, ruta);
-            JOptionPane.showMessageDialog(null, "Material de Produccion generado ");
 
-        } catch (Exception e) {
-
-        }
 
     }//GEN-LAST:event_generarMediosProduccionActionPerformed
 
