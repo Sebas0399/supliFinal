@@ -137,11 +137,7 @@ public class GeneradorPanel extends javax.swing.JPanel {
 
     private void generarFacturasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarFacturasActionPerformed
         // TODO add your handling code here:
-        if (cliente.getNombre().contains("MEGASTOCK")) {
-            FCGenerador generator = new FCGenerador(cliente);
-            
-            //generator.generarExcel(lFinal, cliente, FileUtils.saveData("Guardar Facturas"));
-        } else {
+       
             if (reporteDAO.read() == null) {
                 JOptionPane.showMessageDialog(null, "Ingrese el reporte de produccion");
             } else {
@@ -156,7 +152,7 @@ public class GeneradorPanel extends javax.swing.JPanel {
                 Thread miHilo = new Thread(mRunnable);
                 miHilo.start();
             }
-        }
+        
 
 
     }//GEN-LAST:event_generarFacturasActionPerformed

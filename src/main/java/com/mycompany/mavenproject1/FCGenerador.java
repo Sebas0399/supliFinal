@@ -101,13 +101,13 @@ public class FCGenerador {
                 lFinal.add(algo.getValue());
             }
            
-            generarExcel(lFinal, cliente,savePath);
+            generarExcel(lFinal, x.get(0).get(2).get(0),savePath);
 
         });
         JOptionPane.showMessageDialog(null, "Facturas Generadas");
     }
 
-    public void generarExcel(List<List<String>> lFinal, Cliente cliente,String path) {
+    public void generarExcel(List<List<String>> lFinal, String cliente,String path) {
      
        
         Workbook workbook = new HSSFWorkbook();
@@ -135,7 +135,7 @@ public class FCGenerador {
             }
         }
 
-        String fileLocation = path + "\\" + StringUtils.tranformarNombre(cliente.getNombre()) + "_FC_" + cliente.getRuc() + ".xls";
+        String fileLocation = path + "\\" + StringUtils.tranformarNombre(this.cliente.getNombre()) + "_FC_" + cliente+ ".xls";
 
         try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
             workbook.write(outputStream);
