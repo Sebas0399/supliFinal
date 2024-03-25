@@ -38,7 +38,6 @@ public class MaterialReporteDAO implements IMaterialReporteDAO {
         if (existingMaterial != null) {
             return false; // El material ya existe
         }
-        System.out.println("Material no encotrado"+material);
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.beginTransaction();
             session.persist(material);

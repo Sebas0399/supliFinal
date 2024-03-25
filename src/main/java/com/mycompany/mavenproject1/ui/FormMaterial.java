@@ -409,7 +409,9 @@ public class FormMaterial extends javax.swing.JPanel {
 
         if (this.btnGuardar.getText().equals("Actualizar")) {
             if (mr.update(mat)) {
+                
                 JOptionPane.showMessageDialog(null, "Actualizado correctamente");
+                SwingUtilities.windowForComponent(this).dispose();
 
             } else {
                 JOptionPane.showMessageDialog(null, "Ocurrio un error");

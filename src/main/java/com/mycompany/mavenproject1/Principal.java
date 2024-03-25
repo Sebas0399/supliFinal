@@ -63,8 +63,8 @@ public class Principal extends javax.swing.JFrame {
         jInternalFrame2 = new javax.swing.JInternalFrame();
         jInternalFrame4 = new javax.swing.JInternalFrame();
         jInternalFrame3 = new javax.swing.JInternalFrame();
-        jInternalFrame5 = new javax.swing.JInternalFrame();
         jInternalFrame6 = new javax.swing.JInternalFrame();
+        jInternalFrame5 = new javax.swing.JInternalFrame();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1280, 720));
@@ -72,22 +72,28 @@ public class Principal extends javax.swing.JFrame {
         jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.LEFT);
 
         jInternalFrame1.setVisible(true);
+        jInternalFrame1.getContentPane().setLayout(new java.awt.BorderLayout());
         jTabbedPane1.addTab("Entrada", jInternalFrame1);
 
         jInternalFrame2.setVisible(true);
+        jInternalFrame2.getContentPane().setLayout(new java.awt.BorderLayout());
         jTabbedPane1.addTab("Generador", jInternalFrame2);
 
         jInternalFrame4.setVisible(true);
+        jInternalFrame4.getContentPane().setLayout(new java.awt.BorderLayout());
         jTabbedPane1.addTab("Insumos", jInternalFrame4);
 
         jInternalFrame3.setVisible(true);
+        jInternalFrame3.getContentPane().setLayout(new java.awt.BorderLayout());
         jTabbedPane1.addTab("Material", jInternalFrame3);
 
-        jInternalFrame5.setVisible(true);
-        jTabbedPane1.addTab("Administrar", jInternalFrame5);
-
         jInternalFrame6.setVisible(true);
+        jInternalFrame6.getContentPane().setLayout(new java.awt.BorderLayout());
         jTabbedPane1.addTab("Facturas", jInternalFrame6);
+
+        jInternalFrame5.setVisible(true);
+        jInternalFrame5.getContentPane().setLayout(new java.awt.BorderLayout());
+        jTabbedPane1.addTab("Administrar", jInternalFrame5);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

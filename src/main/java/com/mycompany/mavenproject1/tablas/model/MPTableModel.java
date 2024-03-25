@@ -4,7 +4,17 @@
  */
 package com.mycompany.mavenproject1.tablas.model;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.RowSorterEvent;
+import javax.swing.event.RowSorterListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -12,11 +22,12 @@ import javax.swing.table.AbstractTableModel;
  */
 public class MPTableModel extends AbstractTableModel {
 
-    
-    private String[] columnNames = {"Cliente","Codigo","Subpartida","Descripcion","<HTML>Tipo <br> Unidad<HTML>","<HTML>Saldo <br> Insumo<HTML>","<HTML>Porcentaje <br> Desperdicio<HTML>","<HTML>Porcentaje <br> Merma<HTML>","<HTML>Coeficiente  <br> de Consumo<HTML>","<HTML>No calcula <br> Desperdicio<HTML>","<HTML>Aplica <br> Formula<HTML>","Modificar","Eliminar"};
-    private Object[][] data ;
-    public MPTableModel(Object[][]data){
-        this.data=data;
+    private String[] columnNames = {"Cliente", "Codigo", "Subpartida", "Descripcion", "<HTML>Tipo <br> Unidad<HTML>", "<HTML>Saldo <br> Insumo<HTML>", "<HTML>Porcentaje <br> Desperdicio<HTML>", "<HTML>Porcentaje <br> Merma<HTML>", "<HTML>Coeficiente  <br> de Consumo<HTML>", "<HTML>No calcula <br> Desperdicio<HTML>", "<HTML>Aplica <br> Formula<HTML>", "Modificar", "Eliminar"};
+    private Object[][] data;
+
+    public MPTableModel(Object[][] data) {
+        this.data = data;
+
     }
 
     @Override
@@ -39,11 +50,5 @@ public class MPTableModel extends AbstractTableModel {
         return columnNames[col];
     }
 
-    public void setData(Object[][] data) {
-        this.data = data;
-        fireTableDataChanged();
-    }
-    
-
- 
+  
 }

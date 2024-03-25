@@ -61,7 +61,7 @@ public class MaterialDAO implements IMaterialDAO {
         List<Material> materiales = new ArrayList<>();
         try {
             session.beginTransaction();
-            materiales = session.createQuery("SELECT m FROM Material m", Material.class).getResultList();
+            materiales = session.createQuery("SELECT m FROM Material m ORDER BY m.cliente.nombre ASC,m.codigo ASC", Material.class).getResultList();
             session.getTransaction().commit();
         } catch (Exception e) {
             session.getTransaction().rollback();

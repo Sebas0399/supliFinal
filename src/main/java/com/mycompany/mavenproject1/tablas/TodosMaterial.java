@@ -22,6 +22,12 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.SortOrder;
+import javax.swing.event.RowSorterEvent;
+import javax.swing.event.RowSorterListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -94,8 +100,6 @@ public class TodosMaterial extends javax.swing.JPanel {
 
         MPTableModel modelo = new MPTableModel(datos);
         jTable3.setModel(modelo);
-        TableRowSorter<TableModel> order = new TableRowSorter<>(modelo);
-        jTable3.setRowSorter(order);
 
         jTable3.setRowHeight(30);
         jTable3.setDefaultRenderer(Object.class, new RenderTable());
@@ -216,6 +220,11 @@ public class TodosMaterial extends javax.swing.JPanel {
                 cargarDatos();
             }
 
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+                cargarDatos();
+            }
+
         });
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -226,6 +235,7 @@ public class TodosMaterial extends javax.swing.JPanel {
         int viewRow = jTable3.getSelectedRow();
 
         var row = jTable3.convertRowIndexToModel(viewRow);
+
         MaterialDAO mr = new MaterialDAO();
 
         if (col == 12) {
@@ -245,12 +255,10 @@ public class TodosMaterial extends javax.swing.JPanel {
             FormMaterial fr = new FormMaterial(jTable3.getValueAt(row, 1).toString(), cliente);
             JDialog dialog = new JDialog();
             dialog.setTitle("Actualizar");
-
             dialog.getContentPane().add(fr);
             dialog.setSize(800, 600);
             dialog.setModal(true);
             dialog.setVisible(true);
-
             dialog.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowDeactivated(WindowEvent e) {
@@ -273,7 +281,7 @@ public class TodosMaterial extends javax.swing.JPanel {
 
     private void jTable3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable3MouseReleased
         // TODO add your handling code here:
-       
+
     }//GEN-LAST:event_jTable3MouseReleased
 
     private void jScrollPane3KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jScrollPane3KeyReleased
@@ -283,7 +291,7 @@ public class TodosMaterial extends javax.swing.JPanel {
 
     private void jScrollPane3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jScrollPane3MouseReleased
         // TODO add your handling code here:
-     
+
     }//GEN-LAST:event_jScrollPane3MouseReleased
 
 

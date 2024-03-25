@@ -40,7 +40,7 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
 
     public TodosMaterialReporte() {
         initComponents();
-        this.reporteDAO=new ReporteDAO(HibernateUtil.getSessionFactory());
+        this.reporteDAO = new ReporteDAO(HibernateUtil.getSessionFactory());
         jTable1.setRowHeight(30);
         this.setBounds(0, 0, 800, 600);
         this.setBackground(Color.LIGHT_GRAY);
@@ -144,8 +144,6 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
                 cargarDatos();
             }
 
-          
-
         });
 
 
@@ -169,9 +167,7 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
             var option = JOptionPane.showConfirmDialog(null, "Se va a eliminar el material");
             if (option == JOptionPane.YES_OPTION) {
 
-                String codigo
-                        = jTable1.getModel().getValueAt(row, 0).toString();
-                System.out.println(mr.delete(codigo));
+                jTable1.getModel().getValueAt(row, 0).toString();
                 cargarDatos();
             }
 
@@ -212,7 +208,7 @@ public class TodosMaterialReporte extends javax.swing.JPanel {
         JButton delete = new JButton();
         delete.setText("Eliminar");
         var materiales = mr.readAll();
-        
+
         Object[][] datos = new Object[materiales.size()][WIDTH];
         for (int i = 0; i < materiales.size(); i++) {
             MaterialReporte materiaPrima = materiales.get(i);
