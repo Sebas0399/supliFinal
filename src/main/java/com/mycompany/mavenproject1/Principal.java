@@ -11,6 +11,10 @@ import com.mycompany.mavenproject1.tablas.TodosMaterial;
 import com.mycompany.mavenproject1.tablas.TodosMaterialReporte;
 import com.mycompany.mavenproject1.ui.AdminPanel;
 import com.mycompany.mavenproject1.ui.FacturaPanel;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 public class Principal extends javax.swing.JFrame {
 
@@ -23,9 +27,9 @@ public class Principal extends javax.swing.JFrame {
             Cargando c = new Cargando("Bienvenido");
             c.setVisible(true);
             initComponents();
-            
+
             this.setVisible(false);
-          
+
             EntradaPanel pan1 = new EntradaPanel();
             GeneradorPanel pan2 = new GeneradorPanel(pan1.getPaths());
             jInternalFrame1.add(pan1);
@@ -35,18 +39,30 @@ public class Principal extends javax.swing.JFrame {
             jInternalFrame3.add(pan5);
             TodosMaterial pan4 = new TodosMaterial();
             jInternalFrame4.add(pan4);
-            AdminPanel adminPanel=new AdminPanel();
+            AdminPanel adminPanel = new AdminPanel();
             jInternalFrame5.add(adminPanel);
-            FacturaPanel facturaPanel=new FacturaPanel();
+            FacturaPanel facturaPanel = new FacturaPanel();
             jInternalFrame6.add(facturaPanel);
             c.dispose();
             this.setVisible(true);
+            this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+            this.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    int valor = JOptionPane.showConfirmDialog(null, "Cerrar programa", "Advertencia", JOptionPane.YES_NO_OPTION);
+
+                    if (valor == JOptionPane.YES_OPTION) {
+                        System.exit(0);
+                    }
+                }
+
+            });
 
         };
         Thread miHilo = new Thread(mRunnable);
         miHilo.start();
-        // this.setVisible(false);
 
+        // this.setVisible(false);
     }
 
     /**

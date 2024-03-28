@@ -5,6 +5,8 @@
 package com.mycompany.mavenproject1.database.DAO;
 
 import com.mycompany.mavenproject1.database.model.Factura;
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  *
@@ -14,4 +16,5 @@ public interface IFacturaDAO {
     public Boolean create(Factura factura);
     public void delete(String numero,String rucCliente);
     public Factura readByNumeroAndRuc(String numero,String rucCliente );
+    public List<Factura> filterByFecha(LocalDate fechaInicio,LocalDate fechaFin);
 }

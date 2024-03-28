@@ -67,7 +67,6 @@ public class PdfUtils {
             Factura f = new Factura();
             f.setNroFactura(numeroFactura);
             f.setRucCliente(clienteRuc);
-            f.setRuta(ruta);
             facturaDAO.create(f);
 
             elementosFactura.add(List.of(Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, numeroFactura, fecha));

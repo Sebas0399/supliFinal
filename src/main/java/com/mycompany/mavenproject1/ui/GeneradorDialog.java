@@ -7,16 +7,21 @@ package com.mycompany.mavenproject1.ui;
 import com.mycompany.mavenproject1.Constantes;
 import com.mycompany.mavenproject1.FCGenerador;
 import com.mycompany.mavenproject1.StringUtils;
+import com.mycompany.mavenproject1.database.DAO.FacturaDAO;
 import com.mycompany.mavenproject1.database.DAO.MaterialDAO;
 import com.mycompany.mavenproject1.database.model.Cliente;
+import com.mycompany.mavenproject1.database.model.Factura;
 import com.mycompany.mavenproject1.database.model.Material;
 import com.mycompany.mavenproject1.utils.FileUtils;
+import com.mycompany.mavenproject1.utils.HibernateUtil;
+import com.toedter.calendar.JDateChooser;
 import java.awt.HeadlessException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.MathContext;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,6 +36,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.hibernate.Hibernate;
 
 /**
  *
@@ -40,6 +46,9 @@ public class GeneradorDialog extends javax.swing.JPanel {
 
     MaterialDAO materialDAO;
     TableModel datos;
+    private JDateChooser dateChooserInicio;
+    private JDateChooser dateChooserFin;
+    private FacturaDAO facturaDAO;
 
     /**
      * Creates new form GeneradorDialog
@@ -49,6 +58,14 @@ public class GeneradorDialog extends javax.swing.JPanel {
         materialDAO = new MaterialDAO();
         datos = FacturaPanel.tableFacturas.getModel();
 
+        dateChooserInicio = new JDateChooser();
+        dateChooserInicio.setBounds(300, 20, 150, 30);
+
+        dateChooserFin = new JDateChooser();
+        dateChooserFin.setBounds(300, 70, 150, 30);
+        this.add(dateChooserInicio);
+        this.add(dateChooserFin);
+        facturaDAO = new FacturaDAO(HibernateUtil.getSessionFactory());
     }
 
     /**
@@ -113,7 +130,7 @@ public class GeneradorDialog extends javax.swing.JPanel {
                     .addComponent(jLabel4)
                     .addComponent(jLabel2)
                     .addComponent(jLabel3))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(297, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -138,39 +155,41 @@ public class GeneradorDialog extends javax.swing.JPanel {
         // TODO add your handling code here:
         var ruta = FileUtils.saveData("Guardar Factura");
         Map<String, List<String>> mapLista = new HashMap<>();
-        var rowCount = datos.getRowCount();
-        var colCount = datos.getColumnCount();
-        for (var row = 0; row < rowCount; row++) {
-            List<String> listaDatos = new ArrayList<>();
+        
+      
 
-            for (var col = 0; col < colCount; col++) {
-                listaDatos.add(String.valueOf(datos.getValueAt(row, col)));
-            }
-            mapLista.put(listaDatos.get(2), listaDatos);
+        LocalDate fechaInicio = LocalDate.ofInstant(dateChooserInicio.getCalendar().getTime().toInstant(), java.time.ZoneId.systemDefault());
+        LocalDate fechaFin = LocalDate.ofInstant(dateChooserFin.getCalendar().getTime().toInstant(), java.time.ZoneId.systemDefault());
+        var facturas = facturaDAO.filterByFecha(fechaInicio, fechaFin);
+        for (Factura factura : facturas) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            // Convertir LocalDate a String con el formato especificado
+            String fechaFormateada = factura.getFecha().format(formatter);
+            mapLista.put(factura.getNroFactura(), List.of(factura.getClienteFactura(), factura.getNroFactura(), fechaFormateada, String.valueOf(factura.getCantidad()), factura.getInsumo(), String.valueOf(factura.getLargo()), String.valueOf(factura.getAncho())));
         }
         var nombres = obtenerNombresClientes(mapLista);
+        try {
+            for (var nombre : nombres) {
+                List<List<String>> lFinal = new ArrayList<>();
+                for (var ent : mapLista.entrySet()) {
 
-        for (var nombre : nombres) {
-            List<List<String>> lFinal = new ArrayList<>();
-            for (var ent : mapLista.entrySet()) {
+                    var listaSub = ent.getValue();
+                    var nameCliente = listaSub.get(0);
 
-                var listaSub = ent.getValue();
-                var nameCliente = listaSub.get(1);
+                    if (nombre.contains(nameCliente)) {
+                        lFinal.add(List.of(Constantes.SUBPARTIDA_FC_MEGA, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, listaSub.get(1), listaSub.get(2)));
+                    }
 
-                if (nombre.contains(nameCliente)) {
-                    lFinal.add(List.of(Constantes.SUBPARTIDA_FC_MEGA, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, listaSub.get(2), listaSub.get(3)));
                 }
-
-            }
-            Collections.sort(lFinal, Comparator
-                    .<List<Object>, Comparable>comparing(list -> (Comparable) ((List<Object>) list).get(4))
-                    .thenComparing(list -> ((List<Object>) list).get(6)));
-            try {
+                Collections.sort(lFinal, Comparator
+                        .<List<Object>, Comparable>comparing(list -> (Comparable) ((List<Object>) list).get(4))
+                        .thenComparing(list -> ((List<Object>) list).get(6)));
                 generarExcel(lFinal, FacturaPanel.cliente, nombre, ruta);
-                JOptionPane.showMessageDialog(null, "Factura generada");
-            } catch (HeadlessException e) {
 
             }
+            JOptionPane.showMessageDialog(null, "Facturas generadas");
+
+        } catch (Exception e) {
 
         }
 
@@ -179,10 +198,11 @@ public class GeneradorDialog extends javax.swing.JPanel {
     public List<String> obtenerNombresClientes(Map<String, List<String>> mapLista) {
         List<String> nombres = new ArrayList<>();
         for (var lista : mapLista.entrySet()) {
-            if (!nombres.contains(lista.getValue().get(1))) {
-                nombres.add(lista.getValue().get(1));
+            if (!nombres.contains(lista.getValue().get(0))) {
+                nombres.add(lista.getValue().get(0));
             }
         }
+
         return nombres;
     }
 
@@ -219,13 +239,16 @@ public class GeneradorDialog extends javax.swing.JPanel {
             workbook.write(outputStream);
 
         } catch (IOException ex) {
-            Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FCGenerador.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
 
         try {
             workbook.close();
+
         } catch (IOException ex) {
-            Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FCGenerador.class
+                    .getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, "Ocurrio un errror");
 
         }
@@ -236,34 +259,36 @@ public class GeneradorDialog extends javax.swing.JPanel {
 
         Map<String, List<String>> mapLista = new HashMap<>();
 
-        var rowCount = datos.getRowCount();
-        var colCount = datos.getColumnCount();
+       
         var nameCliente = "";
 
-        for (var row = 0; row < rowCount; row++) {
-            List<String> listaDatos = new ArrayList<>();
+        LocalDate fechaInicio = LocalDate.ofInstant(dateChooserInicio.getCalendar().getTime().toInstant(), java.time.ZoneId.systemDefault());
+        LocalDate fechaFin = LocalDate.ofInstant(dateChooserFin.getCalendar().getTime().toInstant(), java.time.ZoneId.systemDefault());
+        var facturas = facturaDAO.filterByFecha(fechaInicio, fechaFin);
 
-            for (var col = 0; col < colCount; col++) {
-                listaDatos.add(String.valueOf(datos.getValueAt(row, col)));
-            }
-            if (mapLista.containsKey(listaDatos.get(2))) {
-                var sumaVal = Double.valueOf(listaDatos.get(4)) + Double.valueOf(mapLista.get(listaDatos.get(2)).get(4));
-                mapLista.put(listaDatos.get(2), List.of(
-                        listaDatos.get(0),
-                        listaDatos.get(1),
-                        listaDatos.get(2),
-                        listaDatos.get(3),
+        for (Factura factura : facturas) {
+            if (mapLista.containsKey(factura.getNroFactura())) {
+                var sumaVal = Double.valueOf(factura.getCantidad()) + Double.valueOf(mapLista.get(factura.getNroFactura()).get(3));
+                mapLista.put(factura.getNroFactura(), List.of(
+                        factura.getClienteFactura(),
+                        factura.getNroFactura(),
+                        String.valueOf(factura.getFecha()),
                         String.valueOf((int) sumaVal),
-                        listaDatos.get(5),
-                        listaDatos.get(6),
-                        listaDatos.get(7),
-                        listaDatos.get(8),
-                        listaDatos.get(9)
+                        factura.getInsumoDescripcion(),
+                        String.valueOf(factura.getLargo()),
+                        String.valueOf(factura.getAncho())
                 ));
 
             } else {
-
-                mapLista.put(listaDatos.get(2), listaDatos);
+                mapLista.put(factura.getNroFactura(), List.of(
+                        factura.getClienteFactura(),
+                        factura.getNroFactura(),
+                        String.valueOf(factura.getFecha()),
+                        String.valueOf(factura.getCantidad()),
+                        factura.getInsumoDescripcion(),
+                        String.valueOf(factura.getLargo()),
+                        String.valueOf(factura.getAncho())
+                ));
 
             }
         }
@@ -274,10 +299,10 @@ public class GeneradorDialog extends javax.swing.JPanel {
             var numSerie = 1;
             for (var e : mapLista.entrySet()) {
                 var lPeq = e.getValue();
-                nameCliente = lPeq.get(1);
+                nameCliente = lPeq.get(0);
 
                 if (nameCliente.contains(nombre)) {
-                    lFinal.add(List.of(lPeq.get(2), String.valueOf(numSerie), "1", Constantes.SUBPARTIDA_FC_MEGA, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, lPeq.get(6), "U", String.valueOf(lPeq.get(4))));
+                    lFinal.add(List.of(lPeq.get(1), String.valueOf(numSerie), "1", Constantes.SUBPARTIDA_FC_MEGA, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, lPeq.get(4), "U", String.valueOf(lPeq.get(3))));
                     numSerie++;
                 }
 
@@ -326,13 +351,16 @@ public class GeneradorDialog extends javax.swing.JPanel {
             workbook.write(outputStream);
 
         } catch (IOException ex) {
-            Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FCGenerador.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
 
         try {
             workbook.close();
+
         } catch (IOException ex) {
-            Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FCGenerador.class
+                    .getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, "Ocurrio un errror");
 
         }
@@ -377,13 +405,16 @@ public class GeneradorDialog extends javax.swing.JPanel {
             workbook.write(outputStream);
 
         } catch (IOException ex) {
-            Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FCGenerador.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
 
         try {
             workbook.close();
+
         } catch (IOException ex) {
-            Logger.getLogger(FCGenerador.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FCGenerador.class
+                    .getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, "Ocurrio un errror");
 
         }
@@ -393,54 +424,51 @@ public class GeneradorDialog extends javax.swing.JPanel {
         var ruta = FileUtils.saveData("Guardar Medios de Produccion");
 
         Map<String, List<String>> mapLista = new HashMap<>();
-        var rowCount = datos.getRowCount();
-        var colCount = datos.getColumnCount();
+       
         var nameCliente = "";
-        for (var row = 0; row < rowCount; row++) {
-            List<String> listaDatos = new ArrayList<>();
-
-            for (var col = 0; col < colCount; col++) {
-                listaDatos.add(String.valueOf(datos.getValueAt(row, col)));
-            }
-            if (mapLista.containsKey(listaDatos.get(2))) {
-                var largo = new BigDecimal(listaDatos.get(8));
-                var ancho = new BigDecimal(listaDatos.get(9));
-                var cantidad = new BigDecimal(listaDatos.get(4));
+      
+        LocalDate fechaInicio = LocalDate.ofInstant(dateChooserInicio.getCalendar().getTime().toInstant(), java.time.ZoneId.systemDefault());
+        LocalDate fechaFin = LocalDate.ofInstant(dateChooserFin.getCalendar().getTime().toInstant(), java.time.ZoneId.systemDefault());
+        var facturas = facturaDAO.filterByFecha(fechaInicio, fechaFin);
+        for (Factura factura : facturas) {
+            if (mapLista.containsKey(factura.getNroFactura())) {
+                var largo = new BigDecimal(factura.getLargo());
+                var ancho = new BigDecimal(factura.getAncho());
+                var cantidad = new BigDecimal(factura.getCantidad());
                 var tot = largo.multiply(ancho);
                 var totCant = tot.multiply(cantidad).multiply(Constantes.COEFICIENTE_MEGA);
-                var ant = new BigDecimal(mapLista.get(listaDatos.get(2)).get(4));
+                var ant = new BigDecimal(mapLista.get(factura.getNroFactura()).get(3));
 
-                var sumaVal
-                        = totCant.add(ant);
+                var sumaVal= totCant.add(ant);
 
-                mapLista.put(listaDatos.get(2), List.of(
-                        listaDatos.get(0),
-                        listaDatos.get(1),
-                        listaDatos.get(2),
-                        listaDatos.get(3),
+                mapLista.put(factura.getNroFactura(), List.of(
+                        factura.getClienteFactura(),
+                        factura.getNroFactura(),
+                        String.valueOf(factura.getFecha()),
                         String.valueOf(sumaVal.round(new MathContext(3))),
-                        listaDatos.get(5),
-                        listaDatos.get(6),
-                        listaDatos.get(7)
+                        factura.getInsumoDescripcion(),
+                        factura.getInsumo(),
+                        factura.getUnidadMedida()
                 ));
 
             } else {
 
-                var largo = new BigDecimal(listaDatos.get(8));
-                var ancho = new BigDecimal(listaDatos.get(9));
-                var cantidad = new BigDecimal(listaDatos.get(4));
+                var largo = new BigDecimal(factura.getLargo());
+                var ancho = new BigDecimal(factura.getAncho());
+                var cantidad = new BigDecimal(factura.getCantidad());
                 var tot = largo.multiply(ancho);
                 var totCant = tot.multiply(cantidad).multiply(Constantes.COEFICIENTE_MEGA);
-                mapLista.put(listaDatos.get(2), List.of(
-                        listaDatos.get(0),
-                        listaDatos.get(1),
-                        listaDatos.get(2),
-                        listaDatos.get(3),
-                        totCant.round(new MathContext(3)).toString(),
-                        listaDatos.get(5),
-                        listaDatos.get(6),
-                        listaDatos.get(7)
-                ));
+                mapLista.put(factura.getNroFactura(),
+                         List.of(
+                                factura.getClienteFactura(),
+                                factura.getNroFactura(),
+                                String.valueOf(factura.getFecha()),
+                                totCant.round(new MathContext(3)).toString(),
+                                factura.getInsumoDescripcion(),
+                                factura.getInsumo(),
+                                factura.getUnidadMedida()
+                        )
+                );
             }
         }
         var nombres = obtenerNombresClientes(mapLista);
@@ -451,10 +479,10 @@ public class GeneradorDialog extends javax.swing.JPanel {
             var numSerie = 1;
             for (var e : mapLista.entrySet()) {
                 var lPeq = e.getValue();
-                nameCliente = lPeq.get(1);
+                nameCliente = lPeq.get(0);
                 if (nameCliente.contains(nombre)) {
                     Material m = materialDAO.readByCodigo(lPeq.get(5), FacturaPanel.cliente.getRuc());
-                    lFinal.add(List.of(lPeq.get(2),
+                    lFinal.add(List.of(lPeq.get(1),
                             Constantes.SUBPARTIDA_FC_MEGA,
                             Constantes.COMPLEMENTARIO_FC,
                             Constantes.SUPLEMENTARIO_FC,
@@ -464,9 +492,9 @@ public class GeneradorDialog extends javax.swing.JPanel {
                             "0000", "0000",
                             m.getDescripcion(),
                             m.getTipoUnidad(),
-                            String.valueOf(lPeq.get(4)),
+                            String.valueOf(lPeq.get(3)),
                             "0",
-                            String.valueOf(new BigDecimal(lPeq.get(4)).multiply(m.getPorcentajeMerma()!=null?m.getPorcentajeMerma():new BigDecimal(0)).round(new MathContext(3)))
+                            String.valueOf(new BigDecimal(lPeq.get(3)).multiply(m.getPorcentajeMerma() != null ? m.getPorcentajeMerma() : new BigDecimal(0)).round(new MathContext(3)))
                     ));
 
                     numSerie++;

@@ -6,6 +6,8 @@ package com.mycompany.mavenproject1.database.DAO;
 
 import com.mycompany.mavenproject1.database.model.Factura;
 import com.mycompany.mavenproject1.database.model.MaterialReporte;
+import java.time.LocalDate;
+import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -25,8 +27,8 @@ public class FacturaDAO implements IFacturaDAO {
     @Override
     public Boolean create(Factura factura) {
         String numero = factura.getNroFactura();
-        String ruc=factura.getRucCliente();
-        Factura existingFactura = readByNumeroAndRuc(numero,ruc);
+        String ruc = factura.getRucCliente();
+        Factura existingFactura = readByNumeroAndRuc(numero, ruc);
 
         if (existingFactura != null) {
             return false; // El material ya existe
@@ -49,11 +51,23 @@ public class FacturaDAO implements IFacturaDAO {
 
     @Override
     public Factura readByNumeroAndRuc(String numero, String rucCliente) {
-         try (Session session = sessionFactory.openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             return session.createQuery("SELECT f FROM Factura f WHERE f.numero = :numero AND f.rucCliente=:rucCliente", Factura.class)
                     .setParameter("numero", numero)
-                    .setParameter("rucCliente",rucCliente)
+                    .setParameter("rucCliente", rucCliente)
                     .uniqueResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public List<Factura> filterByFecha(LocalDate fechaInicio, LocalDate fechaFin) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("SELECT f FROM Factura f WHERE f.fecha BETWEEN :fechaInicio AND :fechaFin", Factura.class)
+                    .setParameter("fechaInicio", fechaInicio)
+                    .setParameter("fechaFin", fechaFin)
+                    .getResultList();
         } catch (Exception e) {
             return null;
         }

@@ -7,10 +7,12 @@ package com.mycompany.mavenproject1.utils;
 import com.mycompany.mavenproject1.Constantes;
 import com.mycompany.mavenproject1.FCGenerador;
 import com.mycompany.mavenproject1.StringUtils;
+import com.mycompany.mavenproject1.database.DAO.FacturaDAO;
 import com.mycompany.mavenproject1.database.DAO.MaterialDAO;
 import com.mycompany.mavenproject1.database.DAO.MaterialReporteDAO;
 import com.mycompany.mavenproject1.database.DAO.ReporteDAO;
 import com.mycompany.mavenproject1.database.model.Cliente;
+import com.mycompany.mavenproject1.database.model.Factura;
 import com.mycompany.mavenproject1.database.model.Reporte;
 import com.mycompany.mavenproject1.ui.FacturaPanel;
 import java.awt.Window;
@@ -23,6 +25,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -57,13 +61,15 @@ public class InformeClientesUtils {
     private ReporteDAO reporteDAO;
     private MaterialReporteDAO materialReporteDAO;
     private MaterialDAO materialDAO;
+    private FacturaDAO facturaDAO;
 
     public InformeClientesUtils(String ruta, Cliente cliente) {
         this.ruta = ruta;
         this.cliente = cliente;
         this.reporteDAO = new ReporteDAO(HibernateUtil.getSessionFactory());
         this.materialReporteDAO = new MaterialReporteDAO(HibernateUtil.getSessionFactory());
-        this.materialDAO=new MaterialDAO();
+        this.materialDAO = new MaterialDAO();
+        this.facturaDAO = new FacturaDAO(HibernateUtil.getSessionFactory());
 
     }
 
@@ -319,22 +325,29 @@ public class InformeClientesUtils {
     public void generarInforme(Date inicio, Date fin, boolean m) {
         var tabla = FacturaPanel.tableFacturas.getModel();
         var rowCount = tabla.getRowCount();
-        
-        List<List<String>> data = new ArrayList<>();
-            
-        for (int i = 0; i < rowCount; i++) {
-            List<String> peq = new ArrayList<>();
-            peq.add((String) tabla.getValueAt(i, 1));
-            peq.add((String) tabla.getValueAt(i, 2));
-            peq.add((String) tabla.getValueAt(i, 3));
-            peq.add(Constantes.SUBPARTIDA_FC_MEGA);
-            peq.add((String) tabla.getValueAt(i, 6));
-            peq.add("U");
-            peq.add((String) tabla.getValueAt(i, 4));
-            peq.add("");
 
+        List<List<String>> data = new ArrayList<>();
+        LocalDate fechaInicio = LocalDate.ofInstant(inicio.toInstant(), java.time.ZoneId.systemDefault());
+        LocalDate fechaFin = LocalDate.ofInstant(fin.toInstant(), java.time.ZoneId.systemDefault());
+        var facturas = facturaDAO.filterByFecha(fechaInicio, fechaFin);
+        for (Factura factura : facturas) {
+            List<String> peq = new ArrayList<>();
+            peq.add(factura.getClienteFactura());
+            peq.add(factura.getNroFactura());
+            //format fecha
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            // Convertir LocalDate a String con el formato especificado
+            String fechaFormateada = factura.getFecha().format(formatter);
+            peq.add(fechaFormateada);
+            peq.add(Constantes.SUBPARTIDA_FC_MEGA);
+            peq.add(factura.getInsumo());
+            peq.add("U");
+            peq.add(String.valueOf(factura.getCantidad()));
+
+            peq.add("");
             data.add(peq);
         }
+
         generarExcelFinal(data);
     }
 }

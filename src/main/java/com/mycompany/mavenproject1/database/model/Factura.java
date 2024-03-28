@@ -25,14 +25,29 @@ public class Factura {
     @Column(name = "fact_id")
     private Integer id;
     @Column(name = "fact_nro_factura")
-
     private String nroFactura;
+    
     @Column(name = "fact_ruc_cliente")
     private String clienteFactura;
+    
     @Column(name = "fact_cliente")
     private String rucCliente;
-    @Column(name = "fact_ruta")
-    private String ruta;
+    
+    @Column(name = "fact_cantidad")
+    private Integer cantidad;
+    
+    @Column(name = "fact_insumo")
+    private String insumo;
+     @Column(name = "fact_descripcion")
+    private String insumoDescripcion;
+    @Column(name = "fact_unidad")
+    private String unidadMedida;
+    
+    @Column(name = "fact_largo")
+    private Double largo;
+    @Column(name = "fact_ancho")
+    private Double ancho;
+    
     @Column(name = "fact_fecha")
     private LocalDate fecha;
 
@@ -60,12 +75,78 @@ public class Factura {
         this.rucCliente = rucCliente;
     }
 
-    public String getRuta() {
-        return ruta;
+    public String getClienteFactura() {
+        return clienteFactura;
     }
 
-    public void setRuta(String ruta) {
-        this.ruta = ruta;
+    public void setClienteFactura(String clienteFactura) {
+        this.clienteFactura = clienteFactura;
     }
+
+    public Integer getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(Integer cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public String getInsumo() {
+        return insumo;
+    }
+
+    public void setInsumo(String insumo) {
+        this.insumo = insumo;
+    }
+
+    public String getUnidadMedida() {
+        return unidadMedida;
+    }
+
+    public void setUnidadMedida(String unidadMedida) {
+        this.unidadMedida = unidadMedida;
+    }
+
+    public Double getLargo() {
+        return largo;
+    }
+
+    public void setLargo(Double largo) {
+        this.largo = largo;
+    }
+
+    public Double getAncho() {
+        return ancho;
+    }
+
+    public void setAncho(Double ancho) {
+        this.ancho = ancho;
+    }
+
+  
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
+
+    public String getInsumoDescripcion() {
+        return insumoDescripcion;
+    }
+
+    public void setInsumoDescripcion(String insumoDescripcion) {
+        this.insumoDescripcion = insumoDescripcion;
+    }
+
+    @Override
+    public String toString() {
+        return "Factura{" + "id=" + id + ", nroFactura=" + nroFactura + ", clienteFactura=" + clienteFactura + ", rucCliente=" + rucCliente + ", cantidad=" + cantidad + ", insumo=" + insumo + ", insumoDescripcion=" + insumoDescripcion + ", unidadMedida=" + unidadMedida + ", largo=" + largo + ", ancho=" + ancho + ", fecha=" + fecha + '}';
+    }
+
+   
+  
 
 }
