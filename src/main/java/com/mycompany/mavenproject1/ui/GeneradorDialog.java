@@ -15,6 +15,7 @@ import java.awt.HeadlessException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -157,7 +158,7 @@ public class GeneradorDialog extends javax.swing.JPanel {
                 var nameCliente = listaSub.get(1);
 
                 if (nombre.contains(nameCliente)) {
-                    lFinal.add(List.of(Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, listaSub.get(2), listaSub.get(3)));
+                    lFinal.add(List.of(Constantes.SUBPARTIDA_FC_MEGA, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, listaSub.get(2), listaSub.get(3)));
                 }
 
             }
@@ -276,7 +277,7 @@ public class GeneradorDialog extends javax.swing.JPanel {
                 nameCliente = lPeq.get(1);
 
                 if (nameCliente.contains(nombre)) {
-                    lFinal.add(List.of(lPeq.get(2), String.valueOf(numSerie), "1", Constantes.SUBPARTIDA_FC, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, lPeq.get(6), "U", String.valueOf(lPeq.get(4))));
+                    lFinal.add(List.of(lPeq.get(2), String.valueOf(numSerie), "1", Constantes.SUBPARTIDA_FC_MEGA, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, lPeq.get(6), "U", String.valueOf(lPeq.get(4))));
                     numSerie++;
                 }
 
@@ -405,7 +406,7 @@ public class GeneradorDialog extends javax.swing.JPanel {
                 var largo = new BigDecimal(listaDatos.get(8));
                 var ancho = new BigDecimal(listaDatos.get(9));
                 var cantidad = new BigDecimal(listaDatos.get(4));
-                var tot = largo.multiply(ancho).divide(BigDecimal.valueOf(10000));
+                var tot = largo.multiply(ancho);
                 var totCant = tot.multiply(cantidad).multiply(Constantes.COEFICIENTE_MEGA);
                 var ant = new BigDecimal(mapLista.get(listaDatos.get(2)).get(4));
 
@@ -428,7 +429,7 @@ public class GeneradorDialog extends javax.swing.JPanel {
                 var largo = new BigDecimal(listaDatos.get(8));
                 var ancho = new BigDecimal(listaDatos.get(9));
                 var cantidad = new BigDecimal(listaDatos.get(4));
-                var tot = largo.multiply(ancho).divide(BigDecimal.valueOf(10000));
+                var tot = largo.multiply(ancho);
                 var totCant = tot.multiply(cantidad).multiply(Constantes.COEFICIENTE_MEGA);
                 mapLista.put(listaDatos.get(2), List.of(
                         listaDatos.get(0),
@@ -454,7 +455,7 @@ public class GeneradorDialog extends javax.swing.JPanel {
                 if (nameCliente.contains(nombre)) {
                     Material m = materialDAO.readByCodigo(lPeq.get(5), FacturaPanel.cliente.getRuc());
                     lFinal.add(List.of(lPeq.get(2),
-                            Constantes.SUBPARTIDA_FC,
+                            Constantes.SUBPARTIDA_FC_MEGA,
                             Constantes.COMPLEMENTARIO_FC,
                             Constantes.SUPLEMENTARIO_FC,
                             String.valueOf(numSerie),
@@ -465,7 +466,7 @@ public class GeneradorDialog extends javax.swing.JPanel {
                             m.getTipoUnidad(),
                             String.valueOf(lPeq.get(4)),
                             "0",
-                            String.valueOf(new BigDecimal(lPeq.get(4)).multiply(m.getPorcentajeMerma()).round(new MathContext(3)))
+                            String.valueOf(new BigDecimal(lPeq.get(4)).multiply(m.getPorcentajeMerma()!=null?m.getPorcentajeMerma():new BigDecimal(0)).round(new MathContext(3)))
                     ));
 
                     numSerie++;
