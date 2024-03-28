@@ -246,7 +246,7 @@ public class InformeClientesUtils {
         Map<String, List<String>> listaFactura = new HashMap<>();
         //List<List<String>> lFinal = new ArrayList<>();
         List<List<String>> cabeceras = List.of(
-                List.of("CLIENTE", "No. FACTURA", "FECHA FACTURA", "SUBPARTIDA ARANCELARIA P. TERMINADO", "DESCRIPCIÓN P. TERMINADO", "TIPO UNIDAD", "CANTIDAD ELABORADA", "CONTIENE MATERIAL")
+                List.of("CLIENTE", "No. FACTURA", "FECHA FACTURA", "SUBPARTIDA ARANCELARIA P. TERMINADO", "DESCRIPCIÓN P. TERMINADO", "TIPO UNIDAD", "CANTIDAD ELABORADA", "No. de Registro de Anexo")
         );
 
         int rowNumber = 0;
@@ -327,7 +327,7 @@ public class InformeClientesUtils {
             peq.add((String) tabla.getValueAt(i, 1));
             peq.add((String) tabla.getValueAt(i, 2));
             peq.add((String) tabla.getValueAt(i, 3));
-            peq.add(Constantes.SUBPARTIDA_FC);
+            peq.add(Constantes.SUBPARTIDA_FC_MEGA);
             peq.add((String) tabla.getValueAt(i, 6));
             peq.add("U");
             peq.add((String) tabla.getValueAt(i, 4));
