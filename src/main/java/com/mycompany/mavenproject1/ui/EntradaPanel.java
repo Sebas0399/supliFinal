@@ -334,7 +334,7 @@ public class EntradaPanel extends javax.swing.JPanel {
     private void reporteClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reporteClienteActionPerformed
         // TODO add your handling code here:
         Reporte reporte = reporteDAO.read();
-        if (reporte == null) {
+        if (reporte == null && cliente.getNombre().contains("CRA")) {
             JOptionPane.showMessageDialog(null, "Cargue el reporte de produccion");
 
         } else {

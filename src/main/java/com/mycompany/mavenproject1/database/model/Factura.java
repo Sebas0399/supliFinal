@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 
 /**
  *
@@ -27,11 +28,13 @@ public class Factura {
 
     private String nroFactura;
     @Column(name = "fact_ruc_cliente")
-
+    private String clienteFactura;
+    @Column(name = "fact_cliente")
     private String rucCliente;
     @Column(name = "fact_ruta")
-
     private String ruta;
+    @Column(name = "fact_fecha")
+    private LocalDate fecha;
 
     public Integer getId() {
         return id;
@@ -64,6 +67,5 @@ public class Factura {
     public void setRuta(String ruta) {
         this.ruta = ruta;
     }
-    
 
 }
