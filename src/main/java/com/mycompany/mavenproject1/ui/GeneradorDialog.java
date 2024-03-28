@@ -155,8 +155,6 @@ public class GeneradorDialog extends javax.swing.JPanel {
         // TODO add your handling code here:
         var ruta = FileUtils.saveData("Guardar Factura");
         Map<String, List<String>> mapLista = new HashMap<>();
-        
-      
 
         LocalDate fechaInicio = LocalDate.ofInstant(dateChooserInicio.getCalendar().getTime().toInstant(), java.time.ZoneId.systemDefault());
         LocalDate fechaFin = LocalDate.ofInstant(dateChooserFin.getCalendar().getTime().toInstant(), java.time.ZoneId.systemDefault());
@@ -259,7 +257,6 @@ public class GeneradorDialog extends javax.swing.JPanel {
 
         Map<String, List<String>> mapLista = new HashMap<>();
 
-       
         var nameCliente = "";
 
         LocalDate fechaInicio = LocalDate.ofInstant(dateChooserInicio.getCalendar().getTime().toInstant(), java.time.ZoneId.systemDefault());
@@ -293,26 +290,28 @@ public class GeneradorDialog extends javax.swing.JPanel {
             }
         }
         var nombres = obtenerNombresClientes(mapLista);
+        try {
 
-        for (var nombre : nombres) {
-            List<List<String>> lFinal = new ArrayList<>();
-            var numSerie = 1;
-            for (var e : mapLista.entrySet()) {
-                var lPeq = e.getValue();
-                nameCliente = lPeq.get(0);
+            for (var nombre : nombres) {
+                List<List<String>> lFinal = new ArrayList<>();
+                var numSerie = 1;
+                for (var e : mapLista.entrySet()) {
+                    var lPeq = e.getValue();
+                    nameCliente = lPeq.get(0);
 
-                if (nameCliente.contains(nombre)) {
-                    lFinal.add(List.of(lPeq.get(1), String.valueOf(numSerie), "1", Constantes.SUBPARTIDA_FC_MEGA, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, lPeq.get(4), "U", String.valueOf(lPeq.get(3))));
-                    numSerie++;
+                    if (nameCliente.contains(nombre)) {
+                        lFinal.add(List.of(lPeq.get(1), String.valueOf(numSerie), "1", Constantes.SUBPARTIDA_FC_MEGA, Constantes.COMPLEMENTARIO_FC, Constantes.SUPLEMENTARIO_FC, lPeq.get(4), "U", String.valueOf(lPeq.get(3))));
+                        numSerie++;
+                    }
+
                 }
 
-            }
-            try {
                 generarExcelPT(lFinal, FacturaPanel.cliente, nombre, ruta);
-                JOptionPane.showMessageDialog(null, "Producto Terminado generado");
-            } catch (Exception e) {
 
             }
+            JOptionPane.showMessageDialog(null, "Producto Terminado generado");
+
+        } catch (Exception e) {
 
         }
 
@@ -424,9 +423,9 @@ public class GeneradorDialog extends javax.swing.JPanel {
         var ruta = FileUtils.saveData("Guardar Medios de Produccion");
 
         Map<String, List<String>> mapLista = new HashMap<>();
-       
+
         var nameCliente = "";
-      
+
         LocalDate fechaInicio = LocalDate.ofInstant(dateChooserInicio.getCalendar().getTime().toInstant(), java.time.ZoneId.systemDefault());
         LocalDate fechaFin = LocalDate.ofInstant(dateChooserFin.getCalendar().getTime().toInstant(), java.time.ZoneId.systemDefault());
         var facturas = facturaDAO.filterByFecha(fechaInicio, fechaFin);
@@ -439,7 +438,7 @@ public class GeneradorDialog extends javax.swing.JPanel {
                 var totCant = tot.multiply(cantidad).multiply(Constantes.COEFICIENTE_MEGA);
                 var ant = new BigDecimal(mapLista.get(factura.getNroFactura()).get(3));
 
-                var sumaVal= totCant.add(ant);
+                var sumaVal = totCant.add(ant);
 
                 mapLista.put(factura.getNroFactura(), List.of(
                         factura.getClienteFactura(),
@@ -459,7 +458,7 @@ public class GeneradorDialog extends javax.swing.JPanel {
                 var tot = largo.multiply(ancho);
                 var totCant = tot.multiply(cantidad).multiply(Constantes.COEFICIENTE_MEGA);
                 mapLista.put(factura.getNroFactura(),
-                         List.of(
+                        List.of(
                                 factura.getClienteFactura(),
                                 factura.getNroFactura(),
                                 String.valueOf(factura.getFecha()),
@@ -472,43 +471,46 @@ public class GeneradorDialog extends javax.swing.JPanel {
             }
         }
         var nombres = obtenerNombresClientes(mapLista);
+        try {
 
-        for (var nombre : nombres) {
-            List<List<String>> lFinal = new ArrayList<>();
+            for (var nombre : nombres) {
+                List<List<String>> lFinal = new ArrayList<>();
 
-            var numSerie = 1;
-            for (var e : mapLista.entrySet()) {
-                var lPeq = e.getValue();
-                nameCliente = lPeq.get(0);
-                if (nameCliente.contains(nombre)) {
-                    Material m = materialDAO.readByCodigo(lPeq.get(5), FacturaPanel.cliente.getRuc());
-                    lFinal.add(List.of(lPeq.get(1),
-                            Constantes.SUBPARTIDA_FC_MEGA,
-                            Constantes.COMPLEMENTARIO_FC,
-                            Constantes.SUPLEMENTARIO_FC,
-                            String.valueOf(numSerie),
-                            "1", m.getCodigo(),
-                            m.getSubpartida().split("-")[0],
-                            "0000", "0000",
-                            m.getDescripcion(),
-                            m.getTipoUnidad(),
-                            String.valueOf(lPeq.get(3)),
-                            "0",
-                            String.valueOf(new BigDecimal(lPeq.get(3)).multiply(m.getPorcentajeMerma() != null ? m.getPorcentajeMerma() : new BigDecimal(0)).round(new MathContext(3)))
-                    ));
+                var numSerie = 1;
+                for (var e : mapLista.entrySet()) {
+                    var lPeq = e.getValue();
+                    nameCliente = lPeq.get(0);
+                    if (nameCliente.contains(nombre)) {
+                        Material m = materialDAO.readByCodigo(lPeq.get(5), FacturaPanel.cliente.getRuc());
+                        lFinal.add(List.of(lPeq.get(1),
+                                Constantes.SUBPARTIDA_FC_MEGA,
+                                Constantes.COMPLEMENTARIO_FC,
+                                Constantes.SUPLEMENTARIO_FC,
+                                String.valueOf(numSerie),
+                                "1", m.getCodigo(),
+                                m.getSubpartida().split("-")[0],
+                                "0000", "0000",
+                                m.getDescripcion(),
+                                m.getTipoUnidad(),
+                                String.valueOf(lPeq.get(3)),
+                                "0",
+                                String.valueOf(new BigDecimal(lPeq.get(3)).multiply(m.getPorcentajeMerma() != null ? m.getPorcentajeMerma() : new BigDecimal(0)).round(new MathContext(3)))
+                        ));
 
-                    numSerie++;
+                        numSerie++;
+                    }
+
                 }
 
-            }
-            try {
                 generarExcelMP(lFinal, FacturaPanel.cliente, nombre, ruta);
-                JOptionPane.showMessageDialog(null, "Material de Produccion generado ");
-
-            } catch (Exception e) {
 
             }
+            JOptionPane.showMessageDialog(null, "Material de Produccion generado ");
         }
+        catch(Exception e){
+            
+
+    }
 
 
     }//GEN-LAST:event_generarMediosProduccionActionPerformed
